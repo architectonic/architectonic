@@ -1,7 +1,7 @@
 {
   "name": "architectonic",
-  "version": "0.0.6",
-  "description": "CLI for composing agentic system layers such as teleology, identity, project, and skills.",
+  "version": "0.0.7",
+  "description": "CLI for composing Architectonic constitution layers such as doctrine, identity, project, skills, knowledge, and meta.",
   "license": "Apache-2.0",
   "type": "module",
   "bin": {
@@ -13,11 +13,13 @@
   ],
   "keywords": [
     "architectonic",
-    "agentic-systems",
-    "teleology",
+    "constitution",
+    "doctrine",
     "identity",
     "project",
     "skills",
+    "knowledge",
+    "meta",
     "cli"
   ]
 }
