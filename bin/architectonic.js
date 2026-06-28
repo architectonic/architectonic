@@ -91,6 +91,14 @@ function parse(tokens) {
   }
   return out;
 }
+function parseDirArg(tokens) {
+  const p = parse(tokens);
+  if (p.targets.length === 1 && /[\\/]/.test(p.targets[0])) {
+    p.dir = path.resolve(p.targets[0]);
+    p.targets = [];
+  }
+  return p;
+}
 function run(cmd, args, opts = {}) { return spawnSync(cmd, args, { encoding: "utf8", stdio: "pipe", shell: process.platform === "win32", ...opts }); }
 function ensure(cmd, message) { if (run(cmd, ["--version"]).status !== 0) throw new Error(message); }
 function ensureSource(source) {
@@ -120,7 +128,13 @@ function cloneLayer(layer, dir) {
   const to = layerPath(dir, layer);
   if (exists(to)) throw new Error(`Target already exists: ${to}`);
   const url = repoUrl(layer);
-  const r = run("git", ["clone", url, to], { cwd: dir });
+  const gitArgs = [];
+  if (/^(?:[A-Za-z]:\\|[A-Za-z]:\/|\/|\.{1,2}[\\/])/.test(url)) {
+    gitArgs.push("-c", `safe.directory=${url.replace(/\\/g, "/")}`);
+    gitArgs.push("-c", `safe.directory=${url.replace(/\\/g, "/")}/.git`);
+  }
+  gitArgs.push("clone", url, to);
+  const r = run("git", gitArgs, { cwd: dir, shell: process.platform === "win32" });
   if (r.status !== 0) throw new Error(`Failed to clone ${url}\n${(r.stderr || r.stdout || "").trim()}`);
   return { layer, path: to, source: "git", ref: url };
 }
@@ -173,12 +187,12 @@ function init(tokens) {
   install(selected, dir, p.source);
 }
 function load(dir) { if (!exists(manifestPath(dir))) throw new Error(`No architectonic.json found in ${dir}`); return readJson(manifestPath(dir)); }
-function list(tokens) { const p = parse(tokens); const m = load(p.dir); for (const [layer, item] of Object.entries(m.layers || {})) { console.log(`${layer}\n  source: ${item.source || "unknown"}\n  path:   ${item.path || "unknown"}\n  ref:    ${item.ref || "unknown"}${item.package_name ? `\n  pkg:    ${item.package_name}` : ""}`); } }
+function list(tokens) { const p = parseDirArg(tokens); const m = load(p.dir); for (const [layer, item] of Object.entries(m.layers || {})) { console.log(`${layer}\n  source: ${item.source || "unknown"}\n  path:   ${item.path || "unknown"}\n  ref:    ${item.ref || "unknown"}${item.package_name ? `\n  pkg:    ${item.package_name}` : ""}`); } }
 function git(cwd, args) { return run("git", args, { cwd, shell: false }); }
 function dirty(dir) { const r = git(dir, ["status", "--short"]); return r.status === 0 ? (r.stdout || "").trim() : null; }
 function branch(dir) { const r = git(dir, ["rev-parse", "--abbrev-ref", "HEAD"]); return r.status === 0 ? (r.stdout || "").trim() : null; }
 function doctor(tokens) {
-  const p = parse(tokens); const m = load(p.dir); let failed = 0;
+  const p = parseDirArg(tokens); const m = load(p.dir); let failed = 0;
   for (const [raw, item] of Object.entries(m.layers || {})) {
     const layer = normalize(raw); const dir = path.resolve(p.dir, item.path || `./${layer}`); const expected = packageMap[layer]; const found = pkgName(dir);
     if (!exists(dir)) { console.log(`  [fail] ${layer}: missing directory`); failed += 1; continue; }
@@ -190,9 +204,9 @@ function doctor(tokens) {
   if (p.fix) writeManifest(p.dir, m);
   if (failed) process.exit(1);
 }
-function status(tokens) { const p = parse(tokens); ensureSource("git"); ensure("npm", "npm is required on PATH for npm status checks."); const m = load(p.dir); console.log(`architectonic status\n  root: ${p.dir}`); for (const [raw, item] of Object.entries(m.layers || {})) { const layer = normalize(raw); const dir = path.resolve(p.dir, item.path || `./${layer}`); if (!exists(dir)) console.log(`  [missing] ${layer}`); else if (item.source === "git") console.log(`  [git] ${layer}: ${branch(dir) || "unknown"}, ${dirty(dir) ? "dirty" : "clean"}`); else console.log(`  [npm] ${layer}: installed ${pkgVersion(dir) || "unknown"}`); } }
-function diff(tokens) { const p = parse(tokens); const target = normalize(p.targets[0] || ""); if (!target) throw new Error("Specify a layer to diff."); const m = load(p.dir); const item = m.layers[target]; if (!item) throw new Error(`Layer not recorded in manifest: ${target}`); const dir = path.resolve(p.dir, item.path || `./${target}`); if (item.source === "git") { const d = dirty(dir); console.log(`architectonic diff ${target}`); console.log(d ? d.split(/\r?\n/).map((x) => `  ${x}`).join("\n") : "  local changes: none"); } else console.log(`architectonic diff ${target}\n  installed version: ${pkgVersion(dir) || "unknown"}`); }
-function update(tokens) { const p = parse(tokens); const m = load(p.dir); ensureSource("git"); for (const [raw, item] of Object.entries(m.layers || {})) { const layer = normalize(raw); const dir = path.resolve(p.dir, item.path || `./${layer}`); if (!exists(dir)) { console.log(`  [skip] ${layer}: missing`); continue; } if (item.source !== "git") { console.log(`  [skip] ${layer}: npm update is non-mutating for now`); continue; } if (dirty(dir)) { console.log(`  [skip] ${layer}: local changes detected`); continue; } if (p.dryRun) { console.log(`  [plan] ${layer}: would git pull --ff-only`); continue; } const r = git(dir, ["pull", "--ff-only"]); console.log(`  [${r.status === 0 ? "ok" : "fail"}] ${layer}: ${(r.stdout || r.stderr || "").trim()}`); } }
+function status(tokens) { const p = parseDirArg(tokens); ensureSource("git"); ensure("npm", "npm is required on PATH for npm status checks."); const m = load(p.dir); console.log(`architectonic status\n  root: ${p.dir}`); for (const [raw, item] of Object.entries(m.layers || {})) { const layer = normalize(raw); const dir = path.resolve(p.dir, item.path || `./${layer}`); if (!exists(dir)) console.log(`  [missing] ${layer}`); else if (item.source === "git") console.log(`  [git] ${layer}: ${branch(dir) || "unknown"}, ${dirty(dir) ? "dirty" : "clean"}`); else console.log(`  [npm] ${layer}: installed ${pkgVersion(dir) || "unknown"}`); } }
+function diff(tokens) { const p = parse(tokens); if (!p.targets.length) throw new Error("Specify a layer to diff."); if (p.targets.length > 1) { const last = p.targets[p.targets.length - 1]; if (/[\\/]/.test(last)) { p.dir = path.resolve(last); p.targets.pop(); } } const target = normalize(p.targets[0] || ""); if (!target) throw new Error("Specify a layer to diff."); const m = load(p.dir); const item = m.layers[target]; if (!item) throw new Error(`Layer not recorded in manifest: ${target}`); const dir = path.resolve(p.dir, item.path || `./${target}`); if (item.source === "git") { const d = dirty(dir); console.log(`architectonic diff ${target}`); console.log(d ? d.split(/\r?\n/).map((x) => `  ${x}`).join("\n") : "  local changes: none"); } else console.log(`architectonic diff ${target}\n  installed version: ${pkgVersion(dir) || "unknown"}`); }
+function update(tokens) { const p = parseDirArg(tokens); const m = load(p.dir); ensureSource("git"); for (const [raw, item] of Object.entries(m.layers || {})) { const layer = normalize(raw); const dir = path.resolve(p.dir, item.path || `./${layer}`); if (!exists(dir)) { console.log(`  [skip] ${layer}: missing`); continue; } if (item.source !== "git") { console.log(`  [skip] ${layer}: npm update is non-mutating for now`); continue; } if (dirty(dir)) { console.log(`  [skip] ${layer}: local changes detected`); continue; } if (p.dryRun) { console.log(`  [plan] ${layer}: would git pull --ff-only`); continue; } const r = git(dir, ["pull", "--ff-only"]); console.log(`  [${r.status === 0 ? "ok" : "fail"}] ${layer}: ${(r.stdout || r.stderr || "").trim()}`); } }
 function remove(tokens) { const p = parse(tokens); const target = normalize(p.targets[0] || ""); if (!target) throw new Error("Specify a layer to remove."); const m = load(p.dir); const item = m.layers[target]; if (!item) throw new Error(`Layer not recorded in manifest: ${target}`); const dir = path.resolve(p.dir, item.path || `./${target}`); if (exists(path.join(dir, ".git")) && dirty(dir) && !p.force) throw new Error(`Refusing to remove ${target}: local git changes detected. Use --force to delete.`); if (exists(dir)) fs.rmSync(dir, { recursive: true, force: true }); delete m.layers[target]; writeManifest(p.dir, m); console.log(`Removed ${target}`); }
 
 try {
