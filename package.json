@@ -1,0 +1,23 @@
+{
+  "name": "architectonic",
+  "version": "0.0.6",
+  "description": "CLI for composing agentic system layers such as teleology, identity, project, and skills.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "bin": {
+    "architectonic": "bin/architectonic.js"
+  },
+  "files": [
+    "bin",
+    "README.md"
+  ],
+  "keywords": [
+    "architectonic",
+    "agentic-systems",
+    "teleology",
+    "identity",
+    "project",
+    "skills",
+    "cli"
+  ]
+}
