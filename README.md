@@ -1,84 +1,73 @@
 # architectonic
 
-`architectonic` is a command-line tool for composing the core layers of an agentic system.
+`architectonic` is a command-line tool for composing Architectonic constitution layers.
 
-Those layers currently include:
+The default scaffold is:
 
 ```text
-teleology  -- purpose, principles, doctrine, governance
-identity   -- actors, roles, authority, boundaries
-project    -- operating context for a concrete initiative
-skills     -- reusable procedures and capabilities
+constitution      -- root scaffold / bundle contract
+doctrine          -- governing principles, purpose, ethics, ontology, epistemology, governance, incentives
+identity          -- actors, roles, authority, incentives, privacy
+project           -- operating-unit context
+skills            -- reusable procedures and verification
+knowledge         -- disclosed knowledge corpus and evidence
+meta              -- self-audit, upkeep, drift control, recursive improvement
 ```
 
-The initial placeholder releases were intentionally minimal. Starting in
-`0.0.5`, `architectonic` can initialize a workspace, add layers, inspect the
-local manifest, repair light manifest drift, update safely, and remove layers
-without trampling local forks.
-
-Starting in `0.0.6`, it can also inspect drift with `status` and `diff`.
-
-## Command shape
-
-The primary interaction model is:
+Optional package:
 
 ```text
-architectonic add teleology
-architectonic add identity
-architectonic add project
-architectonic add skills
-architectonic add teleology identity skills
-architectonic init
-architectonic doctor
-architectonic status
-architectonic diff
-architectonic list
-architectonic update
-architectonic remove
+living-knowledge  -- campaign-based maintenance pattern for a knowledge corpus
 ```
 
-`add` is explicit and leaves room for future verbs such as `doctor`, `list`,
-`update`, and `remove`.
+`teleology` is deprecated as a layer name and resolves to `doctrine`.
 
-## Current behavior
-
-The primary implemented command is:
+## Main commands
 
 ```text
-npx architectonic add teleology
+npx architectonic init [name]
+npx architectonic add constitution
+npx architectonic add doctrine
 npx architectonic add identity
 npx architectonic add project
 npx architectonic add skills
-npx architectonic add teleology identity skills
-npx architectonic add skills --dir ./vendor
-npx architectonic add teleology --source npm
-npx architectonic init MyWorkspace
-npx architectonic init --preset company
+npx architectonic add knowledge
+npx architectonic add meta
+npx architectonic add living-knowledge
+npx architectonic add teleology        # deprecated alias for doctrine
 npx architectonic list
 npx architectonic doctor
-npx architectonic doctor --fix
 npx architectonic status
-npx architectonic diff teleology
+npx architectonic diff <layer>
 npx architectonic update
-npx architectonic update --dry-run
-npx architectonic remove skills
+npx architectonic remove <layer>
 ```
 
-`add` installs from the Architectonic GitHub organization into the current
-directory by default:
+`npx architectonic init` creates a workspace root and installs the `constitution` bundle.
+
+`npx architectonic add constitution` installs the canonical source repositories directly:
 
 ```text
-./teleology
+./constitution
+./doctrine
 ./identity
 ./project
 ./skills
+./knowledge
+./meta
 ./architectonic.json
 ```
 
-`architectonic.json` records what was installed and where it landed.
+The CLI does not duplicate layer contents. It clones or packs each canonical source package and records the installed layers in `architectonic.json`.
 
-If a target directory already exists, the command stops instead of silently
-overwriting it.
+## Bundles
+
+```text
+constitution      constitution + doctrine + identity + project + skills + knowledge + meta
+knowledge-system  constitution + doctrine + knowledge + meta + living-knowledge
+agent             doctrine + identity + skills + meta
+project           doctrine + project + skills + knowledge + meta
+```
 
 ## Sources
 
@@ -99,37 +88,9 @@ ARCHITECTONIC_NPM_BASE      # override the npm package base or local package roo
 ARCHITECTONIC_ADD_SOURCE    # change the default source mode
 ```
 
-`list` reads `architectonic.json` and shows installed layers.
+## Safety behavior
 
-`doctor` verifies that each recorded layer still exists and that the installed
-package metadata matches the expected layer. `doctor --fix` repairs light
-manifest drift such as stale package names or recoverable default paths.
-
-`status` gives a read-only summary of each layer:
-
-```text
-git layers: branch, dirty/clean, ahead/behind upstream
-npm layers: installed version vs published version
-```
-
-`diff <layer>` drills into one layer:
-
-```text
-git layers: local status lines plus ahead/behind numbers
-npm layers: installed version vs published version
-```
-
-`init` creates a workspace root, installs a preset, and seeds a top-level
-`README.md` and `AGENTS.md`.
-
-Supported presets:
-
-```text
-solo     # teleology + identity + project + skills
-company  # teleology + project + skills
-project  # project + skills
-agent    # identity + skills
-```
+If a target directory already exists, `add` stops instead of silently overwriting it.
 
 `update` is conservative by design:
 
@@ -138,11 +99,9 @@ git layers: only fast-forward clean git worktrees
 npm layers: report newer packages but do not overwrite local forks
 ```
 
-If a user has modified an installed instance, `update` should skip it rather
-than flatten their divergence.
+If a user has modified an installed instance, `update` should skip it rather than flatten their divergence.
 
-`remove` deletes a recorded layer and updates the manifest. If the layer is a
-dirty git worktree, it refuses unless `--force` is explicit.
+`remove` deletes a recorded layer and updates the manifest. If the layer is a dirty git worktree, it refuses unless `--force` is explicit.
 
 ## Run vs install
 
