@@ -1,6 +1,6 @@
 # architectonic
 
-`architectonic` is a command-line tool for composing Architectonic constitution layers.
+`architectonic` is a command-line tool for composing Architectonic constitution layers into a coherent human-agent operating system.
 
 The default scaffold is:
 
@@ -14,13 +14,26 @@ knowledge         -- disclosed knowledge corpus and evidence
 meta              -- self-audit, upkeep, drift control, recursive improvement
 ```
 
-Optional package:
+Optional addon:
 
 ```text
 living-knowledge  -- campaign-based maintenance pattern for a knowledge corpus
 ```
 
 `teleology` is deprecated as a layer name and resolves to `doctrine`.
+
+The core stack fits together like this:
+
+```text
+doctrine          -> what the system is for and what governs it
+identity          -> who participates and what authority they hold
+project           -> where a specific operating unit does its work
+skills            -> how recurring procedures are executed and verified
+knowledge         -> what the system knows and can evidence
+meta              -> how the system audits, maintains, and improves itself
+living-knowledge  -> optional addon for campaign-based corpus maintenance
+constitution      -> the scaffold that composes the stack above
+```
 
 ## Main commands
 
@@ -45,6 +58,10 @@ npx architectonic remove <layer>
 
 `npx architectonic init` creates a workspace root and installs the `constitution` bundle.
 
+That default bundle includes `constitution`, `doctrine`, `identity`, `project`, `skills`, `knowledge`, and `meta`.
+
+`living-knowledge` is intentionally separate so teams can opt into corpus-maintenance campaigns without forcing that structure onto every install.
+
 `npx architectonic add constitution` installs the canonical source repositories directly:
 
 ```text
@@ -68,6 +85,8 @@ knowledge-system  constitution + doctrine + knowledge + meta + living-knowledge
 agent             doctrine + identity + skills + meta
 project           doctrine + project + skills + knowledge + meta
 ```
+
+`living-knowledge` is only included when explicitly added or when a bundle such as `knowledge-system` asks for it.
 
 ## Sources
 

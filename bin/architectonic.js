@@ -4,7 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 
-const VERSION = "0.0.7";
+const VERSION = "0.0.8";
 const [command, ...rest] = process.argv.slice(2);
 const layers = ["constitution", "doctrine", "identity", "project", "skills", "knowledge", "meta", "living-knowledge"];
 const core = ["constitution", "doctrine", "identity", "project", "skills", "knowledge", "meta"];
@@ -55,6 +55,10 @@ Layers:
   knowledge         disclosed knowledge corpus and evidence
   meta              self-audit, upkeep, drift control, recursive improvement
   living-knowledge  optional campaign-based knowledge maintenance pattern
+
+Default install:
+  constitution installs doctrine + identity + project + skills + knowledge + meta
+  living-knowledge is an optional addon and is not included in the default scaffold
 
 Bundles:
   constitution      constitution + doctrine + identity + project + skills + knowledge + meta
@@ -187,7 +191,7 @@ function init(tokens) {
   install(selected, dir, p.source);
 }
 function load(dir) { if (!exists(manifestPath(dir))) throw new Error(`No architectonic.json found in ${dir}`); return readJson(manifestPath(dir)); }
-function list(tokens) { const p = parseDirArg(tokens); const m = load(p.dir); for (const [layer, item] of Object.entries(m.layers || {})) { console.log(`${layer}\n  source: ${item.source || "unknown"}\n  path:   ${item.path || "unknown"}\n  ref:    ${item.ref || "unknown"}${item.package_name ? `\n  pkg:    ${item.package_name}` : ""}`); } }
+function list(tokens) { const p = parseDirArg(tokens); const m = load(p.dir); console.log(`architectonic list\n  root: ${p.dir}`); for (const [layer, item] of Object.entries(m.layers || {})) { console.log(`${layer}\n  source: ${item.source || "unknown"}\n  path:   ${item.path || "unknown"}\n  ref:    ${item.ref || "unknown"}${item.package_name ? `\n  pkg:    ${item.package_name}` : ""}`); } const missingOptional = layers.filter((layer) => !core.includes(layer) && !m.layers[layer]); if (missingOptional.length) console.log(`optional addons not installed:\n  ${missingOptional.join("\n  ")}`); }
 function git(cwd, args) { return run("git", args, { cwd, shell: false }); }
 function dirty(dir) { const r = git(dir, ["status", "--short"]); return r.status === 0 ? (r.stdout || "").trim() : null; }
 function branch(dir) { const r = git(dir, ["rev-parse", "--abbrev-ref", "HEAD"]); return r.status === 0 ? (r.stdout || "").trim() : null; }
@@ -201,6 +205,8 @@ function doctor(tokens) {
     if (p.fix) { item.path = rel(p.dir, dir); item.package_name = found; }
     console.log(`  [ok] ${layer}: ${item.path}`);
   }
+  const missingOptional = layers.filter((layer) => !core.includes(layer) && !m.layers[layer]);
+  for (const layer of missingOptional) console.log(`  [info] ${layer}: optional addon not installed`);
   if (p.fix) writeManifest(p.dir, m);
   if (failed) process.exit(1);
 }
