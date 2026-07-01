@@ -1,0 +1,68 @@
+# Publish architectonic via npm trusted publishing (OIDC).
+# npm: Package → Settings → Trusted publishing → GitHub Actions →
+#   repo architectonic/architectonic, workflow publish-npm.yml
+name: Publish npm
+
+on:
+  push:
+    tags:
+      - 'v[0-9]*.[0-9]*.[0-9]*'
+  workflow_dispatch:
+
+concurrency:
+  group: npm-publish-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tag matches package version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          TAG="${GITHUB_REF#refs/tags/v}"
+          VER="$(node -p "require('./package.json').version")"
+          if [ "$VER" != "$TAG" ]; then
+            echo "version mismatch: package.json is $VER but tag is v$TAG"
+            exit 1
+          fi
+          echo "OK: architectonic at $TAG"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Smoke test
+        run: node bin/architectonic.js --help
+
+      - name: npm CLI (trusted publishing needs >= 11.5.1)
+        run: npm install -g npm@latest
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Publish
+        run: npm publish --access public
+
+      - name: Verify registry
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          TAG="${GITHUB_REF#refs/tags/v}"
+          for i in $(seq 1 12); do
+            v="$(npm view architectonic version 2>/dev/null || true)"
+            if [ "$v" = "$TAG" ]; then
+              echo "OK: architectonic@$v"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "npm view architectonic did not show $TAG (last: $v)"
+          exit 1

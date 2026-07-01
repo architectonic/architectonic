@@ -52,7 +52,7 @@ npx architectonic list
 npx architectonic doctor
 npx architectonic status
 npx architectonic diff <layer>
-npx architectonic update
+npx architectonic update [layer...]
 npx architectonic remove <layer>
 ```
 
@@ -114,8 +114,8 @@ If a target directory already exists, `add` stops instead of silently overwritin
 `update` is conservative by design:
 
 ```text
-git layers: only fast-forward clean git worktrees
-npm layers: report newer packages but do not overwrite local forks
+git layers: only fast-forward clean git worktrees; pass layer names to update one layer (`architectonic update skills`)
+npm layers: report when a newer npm version exists; does not overwrite local installs
 ```
 
 If a user has modified an installed instance, `update` should skip it rather than flatten their divergence.
@@ -129,3 +129,5 @@ npx architectonic ...        # run immediately
 npm install architectonic    # install as a dependency
 npm install -g architectonic # install globally, then run `architectonic ...`
 ```
+
+Release (GitHub Actions + npm OIDC): see [docs/RELEASE.md](./docs/RELEASE.md).

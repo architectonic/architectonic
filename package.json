@@ -1,6 +1,6 @@
 {
   "name": "architectonic",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "CLI for composing Architectonic constitution layers such as doctrine, identity, project, skills, knowledge, and meta.",
   "license": "Apache-2.0",
   "type": "module",
@@ -11,6 +11,13 @@
     "bin",
     "README.md"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/architectonic/architectonic.git"
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "keywords": [
     "architectonic",
     "constitution",

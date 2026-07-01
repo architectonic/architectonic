@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: CLI help
+        run: node bin/architectonic.js --help
+
+      - name: Version from package.json
+        run: node -e "const b=require('fs').readFileSync('bin/architectonic.js','utf8'); if (/const VERSION = ['\"]\\d/.test(b)) { console.error('hardcoded VERSION'); process.exit(1); } if (!b.includes('PKG.version')) { console.error('missing PKG.version'); process.exit(1); }"
