@@ -107,6 +107,18 @@ ARCHITECTONIC_NPM_BASE      # override the npm package base or local package roo
 ARCHITECTONIC_ADD_SOURCE    # change the default source mode
 ```
 
+## Connector freshness
+
+GitHub-backed autonomous operators must use the Connector Freshness Doctrine in [`docs/CONNECTOR_FRESHNESS.md`](./docs/CONNECTOR_FRESHNESS.md).
+
+Core rule:
+
+```text
+resolve repo -> fetch exact ref/SHA -> fetch files directly by path -> act -> record resulting commit SHA
+```
+
+Indexed code search, cached memory, inferred file lists, and stale snippets are not sufficient source of truth for repo state.
+
 ## Safety behavior
 
 If a target directory already exists, `add` stops instead of silently overwriting it.
