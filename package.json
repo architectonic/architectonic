@@ -1,6 +1,6 @@
 {
   "name": "architectonic",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "CLI for composing Architectonic constitution layers such as doctrine, identity, project, skills, knowledge, and meta.",
   "license": "Apache-2.0",
   "type": "module",
@@ -9,6 +9,7 @@
   },
   "files": [
     "bin",
+    "docs",
     "README.md"
   ],
   "repository": {
