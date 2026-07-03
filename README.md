@@ -119,6 +119,18 @@ resolve repo -> fetch exact ref/SHA -> fetch files directly by path -> act -> re
 
 Indexed code search, cached memory, inferred file lists, and stale snippets are not sufficient source of truth for repo state.
 
+## Release verification
+
+NPM-published Architectonic packages must use the publish-and-verify operator skill in [`docs/NPM_PUBLISH_VERIFY_SKILL.md`](./docs/NPM_PUBLISH_VERIFY_SKILL.md).
+
+Core rule:
+
+```text
+read package.json from GitHub -> check npm registry -> bump only when needed -> publish by tag -> verify npm registry
+```
+
+Do not claim a release is live until `npm view <package> version` or the workflow verify step confirms the expected version.
+
 ## Safety behavior
 
 If a target directory already exists, `add` stops instead of silently overwriting it.
