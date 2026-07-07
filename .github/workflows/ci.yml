@@ -19,5 +19,14 @@ jobs:
       - name: CLI help
         run: node bin/architectonic.js --help
 
+      - name: CLI self-check
+        run: node bin/architectonic.js --self-check
+
+      - name: CLI welcome (no args)
+        run: node bin/architectonic.js | grep -q Examples
+
+      - name: CLI version
+        run: test "$(node bin/architectonic.js --version)" = "$(node -p "require('./package.json').version")"
+
       - name: Version from package.json
         run: node -e "const b=require('fs').readFileSync('bin/architectonic.js','utf8'); if (/const VERSION = ['\"]\\d/.test(b)) { console.error('hardcoded VERSION'); process.exit(1); } if (!b.includes('PKG.version')) { console.error('missing PKG.version'); process.exit(1); }"
