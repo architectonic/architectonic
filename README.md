@@ -2,9 +2,9 @@
 
 Architectonic is a living discipline for improving judgment across humans and AI.
 
-It exists to discover, test, refine, preserve, and transmit durable distinctions that remain useful after any individual person, model, runtime, repository, or implementation is gone.
+It exists to discover, test, refine, preserve, and transmit distinctions that remain useful across changes in people, models, runtimes, repositories, and implementations.
 
-The software in this repository is one implementation of Architectonic. It is not Architectonic itself.
+The software in this repository is one implementation of Architectonic. It is not the whole of Architectonic.
 
 ```text
 Architectonic discipline
@@ -19,7 +19,7 @@ The governing objective is not to maximize intelligence, output, or automation i
 
 ## Durable distinctions
 
-Architectonic accumulates cognition rather than information.
+Architectonic aims to preserve reusable judgment, not merely accumulate information.
 
 A distinction deserves to survive when it repeatedly improves future judgment, removes ambiguity, exposes a failure mode, defines an authority boundary, or changes action for the better.
 
@@ -32,13 +32,13 @@ Examples include:
 - memory is not knowledge;
 - generation is not judgment;
 - tools and implementations are temporary;
-- durable distinctions should survive their creators.
+- useful distinctions should not depend on their original author remaining present.
 
 The system must allow distinctions to be challenged, revised, superseded, combined, or retired. Survival is earned through continued explanatory and operational value, not through age, authority, repetition, or attachment to a founder.
 
 ## Human and AI collaboration
 
-The partnership is intentionally asymmetric.
+A useful default collaboration pattern is intentionally asymmetric:
 
 ```text
 AI expands the search space:
@@ -48,13 +48,13 @@ Humans search for invariants:
 what survives, what is fundamental, what is proportionate, what should govern action
 ```
 
-Neither role is sufficient alone.
+These are not exclusive or universal roles. Humans also generate possibilities; AI can also help identify invariants. The point is to make complementary strengths explicit instead of pretending that either participant is sufficient alone.
 
-Generation without judgment produces plausible noise. Judgment without exploration misses possibilities. Architectonic exists to make their interaction cumulative so that good distinctions survive individual conversations and become available to future humans and future AI.
+Generation without judgment produces plausible noise. Judgment without exploration misses possibilities. Architectonic exists to make their interaction cumulative so that useful distinctions can survive individual conversations and remain available to future participants.
 
 ## Substrate independence
 
-Architectonic must survive replacement of every current implementation.
+Architectonic should survive replacement of every current implementation.
 
 It is not identical to:
 
@@ -69,7 +69,7 @@ It is not identical to:
 
 Those are present substrates. They may embody the discipline well or badly, and they may be replaced.
 
-The success criterion is that the quality of reasoning and judgment continues to improve because durable distinctions have become institutional rather than remaining dependent on one biological brain or one model generation.
+The success criterion is that reasoning and judgment remain inspectable, correctable, and cumulatively improvable because useful distinctions have become institutional rather than remaining dependent on one biological brain or one model generation.
 
 ## Current software implementation
 
