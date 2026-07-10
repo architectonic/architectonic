@@ -1,75 +1,32 @@
 # Architectonic
 
-Architectonic is a living discipline for improving judgment across humans and AI.
+Architectonic is a way of thinking based on systemic reasoning.
 
-It exists to discover, test, refine, preserve, and transmit distinctions that remain useful across changes in people, models, runtimes, repositories, and implementations.
+It helps humans and software systems make assumptions, boundaries, evidence, authority, incentives, uncertainty, and consequences explicit before acting.
 
-The software in this repository is one implementation of Architectonic. It is not the whole of Architectonic.
+The software in this repository is one implementation of that approach.
 
-```text
-Architectonic discipline
-→ epistemology
-→ cognition and metacognition
-→ doctrine
-→ organizations and operating systems
-→ replaceable software implementations
-```
+## Principles
 
-The governing objective is not to maximize intelligence, output, or automation in isolation. It is to improve the quality of judgment: what is believed, why it is believed, what kind of cognition produced a conclusion, what remains missing, and what action is justified under uncertainty, incentives, constraints, and consequences.
-
-## Durable distinctions
-
-Architectonic aims to preserve reusable judgment, not merely accumulate information.
-
-A distinction deserves to survive when it repeatedly improves future judgment, removes ambiguity, exposes a failure mode, defines an authority boundary, or changes action for the better.
-
-Examples include:
-
-- intelligence is not cleverness, erudition, or wisdom;
-- evidence is not inference;
-- explanation is not proof;
-- a passing test is not a working system;
-- memory is not knowledge;
-- generation is not judgment;
-- tools and implementations are temporary;
-- useful distinctions should not depend on their original author remaining present.
-
-The system must allow distinctions to be challenged, revised, superseded, combined, or retired. Survival is earned through continued explanatory and operational value, not through age, authority, repetition, or attachment to a founder.
+- Treat systems as relationships, constraints, feedback loops, and consequences rather than isolated parts.
+- Distinguish evidence from inference, memory from knowledge, explanation from proof, and output from results.
+- Make authority and responsibility explicit.
+- Prefer the smallest structure that performs the work and preserves necessary distinctions.
+- Keep claims revisable when evidence or conditions change.
+- Inspect how a conclusion was reached, what is missing, and what would change it.
+- Preserve useful decisions and distinctions so they can be reused and challenged.
+- Keep implementations replaceable.
 
 ## Human and AI collaboration
 
-A useful default collaboration pattern is intentionally asymmetric:
+A useful collaboration pattern is:
 
 ```text
-AI expands the search space:
-possibilities, connections, analogies, alternatives, synthesis
-
-Humans search for invariants:
-what survives, what is fundamental, what is proportionate, what should govern action
+AI explores possibilities, connections, and alternatives.
+Humans identify priorities, constraints, invariants, and acceptable consequences.
 ```
 
-These are not exclusive or universal roles. Humans also generate possibilities; AI can also help identify invariants. The point is to make complementary strengths explicit instead of pretending that either participant is sufficient alone.
-
-Generation without judgment produces plausible noise. Judgment without exploration misses possibilities. Architectonic exists to make their interaction cumulative so that useful distinctions can survive individual conversations and remain available to future participants.
-
-## Substrate independence
-
-Architectonic should survive replacement of every current implementation.
-
-It is not identical to:
-
-- this CLI;
-- npm or `npx`;
-- Workframe;
-- ABKB;
-- Hermes;
-- Codex, Cursor, Claude, or any model/runtime;
-- any current repository structure;
-- any individual human, including its founder.
-
-Those are present substrates. They may embody the discipline well or badly, and they may be replaced.
-
-The success criterion is that reasoning and judgment remain inspectable, correctable, and cumulatively improvable because useful distinctions have become institutional rather than remaining dependent on one biological brain or one model generation.
+These are tendencies, not exclusive roles. Either participant may generate possibilities, test assumptions, or identify patterns. The purpose of the distinction is to make missing cognitive work visible.
 
 ## Current software implementation
 
