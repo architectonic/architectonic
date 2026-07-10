@@ -1,11 +1,15 @@
 {
   "name": "architectonic",
-  "version": "0.0.10",
-  "description": "CLI for composing Architectonic constitution layers such as doctrine, identity, project, skills, knowledge, and meta.",
+  "version": "0.0.11",
+  "description": "CLI for composing Architectonic layers into a workspace for systemic human-AI collaboration.",
   "license": "Apache-2.0",
   "type": "module",
   "bin": {
     "architectonic": "bin/architectonic.js"
+  },
+  "scripts": {
+    "check": "node --check bin/architectonic.js",
+    "test": "node --check bin/architectonic.js && node bin/architectonic.js --help > /dev/null"
   },
   "files": [
     "bin",
@@ -27,6 +31,9 @@
     "project",
     "skills",
     "knowledge",
+    "models",
+    "agents",
+    "living-knowledge",
     "meta",
     "cli"
   ]
