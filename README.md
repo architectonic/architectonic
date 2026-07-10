@@ -16,6 +16,8 @@ The software in this repository is one implementation of that approach.
 - Inspect how a conclusion was reached, what is missing, and what would change it.
 - Preserve useful decisions and distinctions so they can be reused and challenged.
 - Keep implementations replaceable.
+- Separate canonical source material from generated indexes, summaries, embeddings, and graph projections.
+- Preserve provenance when knowledge, skills, or procedures move between systems.
 
 ## Human and AI collaboration
 
@@ -28,20 +30,22 @@ Humans identify priorities, constraints, invariants, and acceptable consequences
 
 These are tendencies, not exclusive roles. Either participant may generate possibilities, test assumptions, or identify patterns. The purpose of the distinction is to make missing cognitive work visible.
 
+Semi-autonomous operation does not remove human responsibility. Authority, review gates, escalation paths, and stopping conditions should remain explicit and proportionate to risk.
+
 ## Current software implementation
 
-The `architectonic` package is a command-line tool for composing Architectonic layers into a coherent human-agent operating system.
+The `architectonic` package is a command-line tool for composing Architectonic layers into a coherent workspace for human-agent collaboration.
 
 The default scaffold is:
 
 ```text
-constitution      -- root scaffold / bundle contract
+constitution      -- root scaffold and bundle contract
 doctrine          -- governing principles, purpose, ethics, ontology, epistemology, governance, incentives
 identity          -- actors, roles, authority, incentives, privacy
 project           -- operating-unit context
 skills            -- reusable procedures and verification
 knowledge         -- disclosed knowledge corpus and evidence
-meta              -- self-audit, upkeep, drift control, recursive improvement
+meta              -- audit, upkeep, drift review, and revision policy
 ```
 
 Optional addon:
@@ -49,6 +53,8 @@ Optional addon:
 ```text
 living-knowledge  -- campaign-based maintenance pattern for a knowledge corpus
 ```
+
+Additional packages such as `agents` and `models` may support concrete implementations without becoming mandatory parts of the conceptual stack.
 
 `teleology` is deprecated as a layer name and resolves to `doctrine`.
 
@@ -60,10 +66,44 @@ identity          -> who participates and what authority they hold
 project           -> where a specific operating unit does its work
 skills            -> how recurring procedures are executed and verified
 knowledge         -> what the system knows and can evidence
-meta              -> how the system audits, maintains, and improves itself
+meta              -> how the system audits, maintains, and revises itself
 living-knowledge  -> optional addon for campaign-based corpus maintenance
 constitution      -> the scaffold that composes the stack above
 ```
+
+## Ensemble contract
+
+The repositories are separate so that each concept has one primary home:
+
+- doctrine should not become a project log;
+- identity should not become a private profile store;
+- project should not duplicate general doctrine or skill corpora;
+- skills should describe reusable procedures rather than project state;
+- knowledge should distinguish sources, claims, synthesis, and uncertainty;
+- meta should record maintenance policy and evidence rather than narrating the system again;
+- living-knowledge should coordinate corpus maintenance without owning the corpus;
+- constitution should compose the layers without duplicating them.
+
+An artifact should exist only when it routes work to source truth, records a decision that changes future action, preserves verification evidence, defines an authority boundary, or removes ambiguity that has caused a real mistake.
+
+## Knowledge interoperability
+
+Architectonic does not define one universal second-brain implementation. It favors interfaces that allow knowledge tools to coexist and be replaced:
+
+```text
+plain-text canonical sources
+stable identifiers
+structured and versioned metadata
+recoverable provenance
+human-readable pages
+machine-readable manifests
+explicit links or typed relations
+reported uncertainty, contradiction, staleness, and gaps
+rebuildable search, vector, and graph indexes
+review gates for publication and destructive changes
+```
+
+These patterns are compatible with emerging open knowledge formats, wiki-style LLM corpora, graph-backed retrieval, schema packs, and hybrid lexical/vector/graph systems. Tool-specific indexes remain derived views rather than canonical truth.
 
 ## Main commands
 
@@ -139,7 +179,7 @@ ARCHITECTONIC_ADD_SOURCE    # change the default source mode
 
 ## Connector freshness
 
-GitHub-backed autonomous operators must use the Connector Freshness Doctrine in [`docs/CONNECTOR_FRESHNESS.md`](./docs/CONNECTOR_FRESHNESS.md).
+GitHub-backed operators should use the Connector Freshness Doctrine in [`docs/CONNECTOR_FRESHNESS.md`](./docs/CONNECTOR_FRESHNESS.md).
 
 Core rule:
 
@@ -147,11 +187,11 @@ Core rule:
 resolve repo -> fetch exact ref/SHA -> fetch files directly by path -> act -> record resulting commit SHA
 ```
 
-Indexed code search, cached memory, inferred file lists, and stale snippets are not sufficient source of truth for repo state.
+Indexed code search, cached memory, inferred file lists, and stale snippets are not sufficient source of truth for repository state.
 
 ## Release verification
 
-NPM-published Architectonic packages must use the publish-and-verify operator skill in [`docs/NPM_PUBLISH_VERIFY_SKILL.md`](./docs/NPM_PUBLISH_VERIFY_SKILL.md).
+NPM-published Architectonic packages should use the publish-and-verify procedure in [`docs/NPM_PUBLISH_VERIFY_SKILL.md`](./docs/NPM_PUBLISH_VERIFY_SKILL.md).
 
 Core rule:
 
@@ -159,7 +199,7 @@ Core rule:
 read package.json from GitHub -> check npm registry -> bump only when needed -> publish by tag -> verify npm registry
 ```
 
-Do not claim a release is live until `npm view <package> version` or the workflow verify step confirms the expected version.
+Do not claim a release is live until `npm view <package> version` or the workflow verification step confirms the expected version.
 
 ## Safety behavior
 
@@ -169,7 +209,7 @@ If a target directory already exists, `add` stops instead of silently overwritin
 
 ```text
 git layers: only fast-forward clean git worktrees; pass layer names to update one layer (`architectonic update skills`)
-npm layers: report when a newer npm version exists; does not overwrite local installs
+npm layers: report when a newer npm version exists; do not overwrite local installs
 ```
 
 If a user has modified an installed instance, `update` should skip it rather than flatten their divergence.
@@ -184,4 +224,4 @@ npm install architectonic    # install as a dependency
 npm install -g architectonic # install globally, then run `architectonic ...`
 ```
 
-Release (GitHub Actions + npm OIDC): see [docs/RELEASE.md](./docs/RELEASE.md).
+Release details: see [docs/RELEASE.md](./docs/RELEASE.md).
