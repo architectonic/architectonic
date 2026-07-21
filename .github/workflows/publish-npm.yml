@@ -103,7 +103,7 @@ jobs:
           npx --yes "architectonic@$VERSION" verify --json > verify.json
           node -e 'const fs=require("fs"); const x=JSON.parse(fs.readFileSync("verify.json","utf8")); if (!x.ok) { console.error(x); process.exit(1); }'
           npx --yes "architectonic@$VERSION" map --json > map.json
-          node -e 'const fs=require("fs"); const x=JSON.parse(fs.readFileSync("map.json","utf8")); if (!Array.isArray(x.layers) || x.layers.length !== 10) { console.error(x); process.exit(1); }'
+          node -e 'const fs=require("fs"); const x=JSON.parse(fs.readFileSync("map.json","utf8")); if (!Array.isArray(x.rows) || x.rows.length !== 10) { console.error(x); process.exit(1); }'
           test -f AGENTS.md
           test -f constitution/constitution.md
           test -f doctrine/doctrine.md
