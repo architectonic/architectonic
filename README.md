@@ -1,111 +1,85 @@
 # Architectonic
 
+> **Status: experimental, pre-1.0.** Architectonic is under active use, but public comparative benchmarks and independent replications remain incomplete. Evaluate it through its contracts, conformance checks, examples, raw evidence, and stated limitations—not through stars, forks, or unsupported claims.
+
+Architectonic is an **agent-readable operating protocol for human–AI organizations**.
+
+It gives agents a stable, inspectable map of:
+
+- what must remain true;
+- why the organization and its projects exist;
+- who may decide, delegate, approve, or stop;
+- where source truth and current project context live;
+- what is known, uncertain, contradicted, or missing;
+- how recurring work is performed and verified;
+- which agents and computational capabilities may be used;
+- how the system is audited and revised.
+
+Architectonic does not make an agent inherently correct. It makes organizational assumptions, authority, evidence, unknowns, procedures, and maintenance easier to locate and challenge before action.
+
+## Start
+
 ```bash
-npx architectonic@latest init
+npx architectonic@latest init my-organization --source npm
+cd my-organization
+npx architectonic verify
+npx architectonic map
 ```
 
-Architectonic is a way of thinking based on systemic reasoning. It helps humans and software systems make assumptions, boundaries, evidence, authority, incentives, uncertainty, and consequences explicit before acting.
+`verify` checks the declared protocol, package identity, canonical entries, and required layers. `map` shows the smallest canonical files an agent should inspect before broad repository search.
 
-The `architectonic` package is the CLI that composes independent layer packages into one portable workspace for human-AI collaboration.
-
-## Principles
-
-- Treat systems as relationships, constraints, feedback loops, and consequences rather than isolated parts.
-- Distinguish evidence from inference, memory from knowledge, explanation from proof, and output from results.
-- Make authority, responsibility, incentives, and stopping conditions explicit.
-- Prefer the smallest structure that performs the work and preserves necessary distinctions.
-- Keep claims revisable when evidence or conditions change.
-- Preserve useful decisions, procedures, and evidence so they can be reused and challenged.
-- Keep implementations replaceable.
-- Separate canonical source material from generated indexes, summaries, embeddings, and graph projections.
-- Preserve provenance when knowledge, skills, procedures, or model evaluations move between systems.
-
-## Ensemble
-
-Each layer is an independent package with one primary home:
+## Build the organization
 
 ```text
-constitution      composition contract for the ensemble
-doctrine          purpose, principles, ontology, epistemology, ethics, governance, incentives
-identity          actors, roles, authority, delegation, incentives, privacy
-project           operating-unit context, sources, decisions, risks, continuity
-skills            reusable procedures, verification, failure handling
-knowledge         claims, sources, evidence, uncertainty, known unknowns
-models            model metadata, evaluations, capability requirements, routing policy
-agents            software actors composed from identity, skills, models, knowledge, permissions
-living-knowledge  optional: governed maintenance of frequently changing corpora
-meta              audit, upkeep, drift review, revision policy
+constitution      what must remain true and how material change is approved
+doctrine          purpose, conduct, authority, evidence, incentives, and decision rules
+identity          actors, roles, delegation, privacy, and stopping authority
+agents            software actors composed from identity, skills, knowledge, models, and permissions
+project           bounded operating contexts with sources, decisions, risks, and open questions
+knowledge         one or more sourced, revisable corpora
+living-knowledge  optional maintenance for corpora that change frequently
+skills            reusable procedures with inputs, verification, and failure handling
+models            optional capability evidence and routing policy
+meta              audit, drift review, failure learning, revision, and retirement
 ```
 
-```text
-doctrine          -> what the system is for and what governs it
-identity          -> who participates and what authority they hold
-project           -> where a concrete operating unit does its work
-skills            -> how recurring procedures are performed and verified
-knowledge         -> what claims and evidence are retained
-models            -> what computational capabilities exist and under what constraints
-agents            -> how actors, procedures, models, knowledge, and permissions are composed
-living-knowledge  -> how changing corpora are reviewed, revised, and published
-meta              -> how the ensemble is audited, maintained, and revised
-constitution      -> how the packages are composed without duplicating their contents
-```
+Use the whole system or only the layers that remove demonstrated ambiguity. The default `full` profile installs all ten layers. Named partial profiles remain valid and are verified against their own declared requirements.
 
-`teleology` refers to the study of purpose and ends. Within Architectonic, purpose belongs in `doctrine` alongside the other governing principles.
+## Why not copy the principles?
+
+You can. Architectonic is intentionally file-native, runtime-neutral, and replaceable.
+
+The CLI earns its place when you need the same structure to be reproducibly installed, mapped, semantically verified, versioned, compared, safely upgraded, and inspected across multiple workspaces. The files remain readable without the CLI.
 
 ## Commands
 
 ```bash
-npx architectonic init [name]              # full ensemble
-npx architectonic init [name] --source npm
-npx architectonic add <layer>              # one layer
-npx architectonic add <layer> --source npm
-npx architectonic add constitution         # preset bundle alias
-npx architectonic list
+npx architectonic init [name] --preset full
+npx architectonic add <layer|profile>
+npx architectonic map
+npx architectonic verify
 npx architectonic doctor
 npx architectonic status
-npx architectonic diff <layer>
-npx architectonic update [layer...]
-npx architectonic remove <layer>
+npx architectonic upgrade [layer...]
+npx architectonic agent create --spec <file> --output <dir>
 ```
 
-`init` creates a workspace root and installs the constitution ensemble:
+`add constitution` installs only the constitution layer. `init --preset constitution` remains a deprecated compatibility alias for `init --preset full`.
+
+## Claim discipline
+
+Architectonic distinguishes:
 
 ```text
-./constitution
-./doctrine
-./identity
-./project
-./skills
-./knowledge
-./models
-./agents
-./living-knowledge
-./meta
-./architectonic.json
+design objective       intended effect, not yet measured
+mechanism demonstrated inspectable behavior supported by tests
+internally observed    observed in active use, not independently reproduced
+publicly benchmarked   reproduced from published fixtures, runs, and scoring
+externally replicated  independently reproduced under the published protocol
 ```
 
-## Bundles
+No claim should outrun its evidence. See `docs/CLAIMS.md`, `docs/MATURITY.md`, and `docs/EVALUATE.md`.
 
-```text
-constitution      all ten layers
-knowledge-system  constitution, doctrine, knowledge, living-knowledge, meta
-agent-system      doctrine, identity, project, skills, knowledge, models, agents, meta
-project-system    doctrine, identity, project, skills, knowledge, models, agents, meta
-```
+## License
 
-## Sources
-
-```text
---source git   clone from GitHub or ARCHITECTONIC_SOURCE_BASE
---source npm   pack from registry or ARCHITECTONIC_NPM_BASE
-```
-
-Default is `git`.
-
-## Safety
-
-`add` stops when a target directory already exists. `update` fast-forwards only clean git worktrees. `remove` refuses dirty worktrees unless `--force`.
-
-## Release
-
-A version is published only after the registry confirms it. See [`docs/RELEASE.md`](./docs/RELEASE.md).
+Apache-2.0.
