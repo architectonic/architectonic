@@ -1,20 +1,18 @@
-# Publish architectonic via npm trusted publishing (OIDC).
-# npm: Package → Settings → Trusted publishing → GitHub Actions →
-#   repo architectonic/architectonic, workflow publish-npm.yml
 name: Publish npm
 
 on:
   push:
-    branches:
-      - main
-    tags:
-      - 'v[0-9]*.[0-9]*.[0-9]*'
+    branches: [main]
+    tags: ['v[0-9]*.[0-9]*.[0-9]*']
     paths:
-      - 'package.json'
-      - 'README.md'
-      - 'docs/**'
-      - 'bin/**'
-      - '.github/workflows/publish-npm.yml'
+      - package.json
+      - README.md
+      - bin/**
+      - docs/**
+      - protocol/**
+      - scripts/**
+      - test/**
+      - .github/workflows/publish-npm.yml
   workflow_dispatch:
 
 concurrency:
@@ -30,63 +28,55 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate source
+        run: |
+          npm test
+          npm run check
+          npm run pack:verify
       - name: Tag matches package version
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           TAG="${GITHUB_REF#refs/tags/v}"
           VER="$(node -p "require('./package.json').version")"
-          if [ "$VER" != "$TAG" ]; then
-            echo "version mismatch: package.json is $VER but tag is v$TAG"
-            exit 1
-          fi
-          echo "OK: architectonic at $TAG"
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Smoke test
-        run: node bin/architectonic.js --help
-
-      - name: npm CLI (trusted publishing needs >= 11.5.1)
+          test "$VER" = "$TAG" || { echo "version mismatch: package.json is $VER but tag is v$TAG"; exit 1; }
+      - name: Build exact package artifact
+        id: pack
+        run: |
+          npm pack --json > pack.json
+          FILE="$(node -e "const x=require('./pack.json'); process.stdout.write(x[0].filename)")"
+          echo "file=$FILE" >> "$GITHUB_OUTPUT"
+      - name: Validate packed artifact
+        run: |
+          mkdir unpacked
+          tar -xzf "${{ steps.pack.outputs.file }}" -C unpacked
+          node unpacked/package/bin/architectonic.js --self-check
+      - name: Install current npm CLI
         run: npm install -g npm@latest
-
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
-
       - name: Check registry version
         id: registry
         run: |
+          PKG="$(node -p "require('./package.json').name")"
           VER="$(node -p "require('./package.json').version")"
-          CURRENT="$(npm view architectonic version 2>/dev/null || true)"
-          echo "package_version=$VER" >> "$GITHUB_OUTPUT"
-          echo "registry_version=$CURRENT" >> "$GITHUB_OUTPUT"
-          if [ "$CURRENT" = "$VER" ]; then
-            echo "already_published=true" >> "$GITHUB_OUTPUT"
-            echo "architectonic@$VER is already published; skipping publish"
-          else
-            echo "already_published=false" >> "$GITHUB_OUTPUT"
-            echo "Publishing architectonic@$VER; registry currently has ${CURRENT:-none}"
-          fi
-
+          CURRENT="$(npm view "$PKG" version 2>/dev/null || true)"
+          echo "package=$PKG" >> "$GITHUB_OUTPUT"
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+          test "$CURRENT" = "$VER" && echo "published=true" >> "$GITHUB_OUTPUT" || echo "published=false" >> "$GITHUB_OUTPUT"
       - name: Publish
-        if: steps.registry.outputs.already_published != 'true'
-        run: npm publish --access public
-
+        if: steps.registry.outputs.published != 'true'
+        run: npm publish "${{ steps.pack.outputs.file }}" --access public
       - name: Verify registry
-        if: steps.registry.outputs.already_published != 'true'
         run: |
-          VER="${{ steps.registry.outputs.package_version }}"
           for i in $(seq 1 12); do
-            v="$(npm view architectonic version 2>/dev/null || true)"
-            if [ "$v" = "$VER" ]; then
-              echo "OK: architectonic@$v"
-              exit 0
-            fi
+            CURRENT="$(npm view "${{ steps.registry.outputs.package }}" version 2>/dev/null || true)"
+            test "$CURRENT" = "${{ steps.registry.outputs.version }}" && exit 0
             sleep 5
           done
-          echo "npm view architectonic did not show $VER (last: $v)"
+          echo "registry did not return ${{ steps.registry.outputs.package }}@${{ steps.registry.outputs.version }}"
           exit 1
