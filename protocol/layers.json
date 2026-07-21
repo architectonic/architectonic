@@ -5,52 +5,62 @@
     "constitution": {
       "packageName": "architectonic-constitution",
       "entry": "constitution.md",
-      "purpose": "organizational invariants, composition, and amendment boundaries"
+      "purpose": "organizational invariants, composition, and amendment boundaries",
+      "localEntry": "organization/constitution.md"
     },
     "doctrine": {
       "packageName": "architectonic-doctrine",
       "entry": "doctrine.md",
-      "purpose": "purpose, conduct, authority, evidence, incentives, and decision rules"
+      "purpose": "purpose, conduct, authority, evidence, incentives, and decision rules",
+      "localEntry": "organization/doctrine.md"
     },
     "identity": {
       "packageName": "architectonic-identity",
       "entry": "START_HERE.md",
-      "purpose": "actors, roles, authority, delegation, incentives, and privacy"
+      "purpose": "actors, roles, authority, delegation, incentives, and privacy",
+      "localEntry": "organization/actors.md"
     },
     "project": {
       "packageName": "architectonic-project",
       "entry": "START_HERE.md",
-      "purpose": "bounded operating context, sources, decisions, risks, and continuity"
+      "purpose": "bounded operating context, sources, decisions, risks, and continuity",
+      "localEntry": "organization/projects/index.md"
     },
     "skills": {
       "packageName": "architectonic-skills",
       "entry": "README.md",
-      "purpose": "reusable procedures with verification and failure handling"
+      "purpose": "reusable procedures with verification and failure handling",
+      "localEntry": "organization/skills/index.md"
     },
     "knowledge": {
       "packageName": "architectonic-knowledge",
       "entry": "knowledge.md",
-      "purpose": "claims, sources, evidence, uncertainty, contradictions, and known unknowns"
+      "purpose": "claims, sources, evidence, uncertainty, contradictions, and known unknowns",
+      "localEntry": "organization/knowledge/index.md"
     },
     "models": {
       "packageName": "architectonic-models",
       "entry": "README.md",
-      "purpose": "dated model evidence, capability requirements, and routing policy"
+      "purpose": "dated model evidence, capability requirements, and routing policy",
+      "localEntry": "organization/models.md"
     },
     "agents": {
       "packageName": "architectonic-agents",
       "entry": "README.md",
-      "purpose": "software-actor composition, permissions, prompts, evaluations, and attachments"
+      "purpose": "software-actor composition, permissions, prompts, evaluations, and attachments",
+      "localEntry": "organization/agents/index.md"
     },
     "living-knowledge": {
       "packageName": "architectonic-living-knowledge",
       "entry": "living-knowledge.md",
-      "purpose": "governed maintenance for frequently changing knowledge corpora"
+      "purpose": "governed maintenance for frequently changing knowledge corpora",
+      "localEntry": "organization/living-knowledge.md"
     },
     "meta": {
       "packageName": "architectonic-meta",
       "entry": "meta.md",
-      "purpose": "audit, drift review, failure learning, revision, and retirement"
+      "purpose": "audit, drift review, failure learning, revision, and retirement",
+      "localEntry": "organization/meta.md"
     }
   }
 }
