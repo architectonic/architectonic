@@ -4,6 +4,7 @@ import { agentCommand, remove, update, upgrade } from "../lib/manage.js";
 import { init, installResolved } from "../lib/install.js";
 import { diff, doctor, listCommand, mapCommand, status, verify } from "../lib/inspect.js";
 import { helpCommand, helpFull, selfCheck, welcome } from "../lib/help.js";
+import { onboard } from "../lib/organization.js";
 import { COMMANDS, VERSION, icon, parse, printErr, println, resolveAddTargets } from "../lib/runtime.js";
 
 const argv = process.argv.slice(2);
@@ -22,6 +23,7 @@ function main() {
     const parsed = parse(argv.slice(1));
     return installResolved(resolveAddTargets(parsed.targets), parsed.dir, parsed.source);
   }
+  if (command === "onboard") return onboard(argv.slice(1));
   if (command === "list") return listCommand(argv.slice(1));
   if (command === "doctor") return doctor(argv.slice(1));
   if (command === "verify") return verify(argv.slice(1));
