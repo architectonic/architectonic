@@ -1,7 +1,7 @@
 {
   "name": "architectonic",
-  "version": "0.2.1",
-  "description": "Agent-readable operating protocol and CLI for human–AI organizations.",
+  "version": "0.3.0",
+  "description": "Adaptive, agent-readable operating protocol and CLI for human–AI collaboration.",
   "license": "Apache-2.0",
   "type": "module",
   "bin": {
@@ -35,6 +35,10 @@
     "human-ai",
     "governance",
     "provenance",
-    "cli"
+    "cli",
+    "adaptive",
+    "knowledge-graph",
+    "second-brain",
+    "agent-loops"
   ]
 }
