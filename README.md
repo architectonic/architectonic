@@ -1,77 +1,190 @@
 # Architectonic
 
-> **Status: experimental, pre-1.0.** Architectonic is under active use, but public comparative benchmarks and independent replications remain incomplete. Evaluate it through its contracts, conformance checks, examples, raw evidence, and stated limitations—not through stars, forks, or unsupported claims.
+> **Status: experimental, pre-1.0.** Architectonic is under active use, but comparative benchmarks and independent replications remain incomplete. Evaluate it through its contracts, tests, examples, evidence, and stated limitations—not through stars, forks, or unsupported claims.
 
-Architectonic is an **agent-readable operating protocol for human–AI organizations**.
+Architectonic is an **adaptive, agent-readable operating protocol for human–AI collaboration**.
 
-It helps an agent establish and maintain an organization by separating:
+It gives durable concerns stable homes without requiring every workspace to become a ten-layer organization. A disposable task may need nothing. A project, constitution, actor model, skill library, corpus, or maintenance policy may stand alone. Compound profiles are justified only when the work needs their combined boundaries.
 
-- organization-owned facts, decisions, authority, projects, and policy;
-- upstream contracts, schemas, examples, and reusable procedures;
-- sources, claims, assumptions, contradictions, and known unknowns;
-- installed agents from runtime authority;
-- automated discovery from governed publication and destructive action.
+```text
+no durable need     -> use existing repository instructions
+one durable concern -> install one standalone layer
+several concerns    -> use the smallest matching profile
+unusual need        -> compose exact layers with +
+```
 
-Architectonic does not make an agent inherently correct. It makes organizational assumptions, authority, evidence, unknowns, procedures, and maintenance easier to locate and challenge before action.
-
-## Start
+## Choose before installing
 
 ```bash
-npx architectonic@latest init my-organization --source npm
-cd my-organization
+npx architectonic@latest recommend --need "a standalone software project"
+npx architectonic@latest recommend --need "a changing regulatory corpus"
+npx architectonic@latest recommend --need "a personal second brain"
+npx architectonic@latest recommend --need "recurring multi-agent research loops"
+```
+
+The recommendation is deterministic and advisory. It can correctly return **no installation**.
+
+## Start small
+
+```bash
+# One standalone project
+npx architectonic@latest init my-project --preset project --source npm
+
+# Governance and actors, without projects or knowledge
+npx architectonic@latest init my-organization --preset organization --source npm
+
+# Manually curated corpus
+npx architectonic@latest init my-knowledge --preset knowledge-system --source npm
+
+# Sources whose correctness changes on an external clock
+npx architectonic@latest init current-regulations --preset living-knowledge-system --source npm
+
+# Exact custom composition
+npx architectonic@latest init research --preset project+knowledge+skills+meta --source npm
+```
+
+Then:
+
+```bash
+cd my-project
 npx architectonic onboard
 npx architectonic verify
 npx architectonic map
 ```
 
-`init` installs the selected protocol layers and creates an editable `organization/` instance. Installed package directories remain upstream contracts; local facts and decisions belong under `organization/` so package upgrades do not overwrite the organization.
+`init` installs upstream contracts and creates editable files under `organization/`. Local facts, authority, decisions, projects, knowledge, and policy belong in `organization/`; installed packages remain replaceable.
+
+## Adaptive profiles
+
+| Profile | Use it when | Do not use it when |
+| --- | --- | --- |
+| `constitution` | Only invariants, prohibited actions, authority root, and amendment rules need a durable home. | Operational context also needs to be modeled. |
+| `identity` | The immediate ambiguity is actors, roles, authority, delegation, incentives, or privacy. | No material actor boundary exists. |
+| `project` | One bounded initiative needs sources, decisions, risks, unknowns, and handoff. | The task is disposable. |
+| `project-system` | A standalone project also needs its own corpus, procedures, and upkeep. | Existing external systems already own those concerns. |
+| `organization` | A team needs purpose, governance, actors, privacy, and maintenance. | Only one project or corpus needs structure. |
+| `knowledge` | One corpus is curated deliberately by humans. | Correctness decays as external sources change. |
+| `knowledge-system` | A corpus needs reusable ingestion, query, audit, and retirement procedures. | Scheduled source review is required. |
+| `living-knowledge-system` | Regulations, markets, security advisories, provider catalogs, or other changing sources require governed recurring maintenance. | Updates happen only through deliberate manual edits. |
+| `llm-wiki` | Raw sources should compound into an indexed, source-backed wiki, inventory, datasets, outputs, and recurring audits. | A few stable notes are enough. |
+| `second-brain` | A person needs capture, organization, distillation, expression, projects, resources, and a quiet archive. | The corpus is institutionally governed or regulated. |
+| `agent-team` | Several software actors need distinct roles, skills, knowledge, model policy, and review gates. | One general agent and repository instructions are sufficient. |
+| `loop-system` | Work continues across runs, schedules, agents, or handoffs. | One bounded session can finish safely. |
+| `graph-system` | Relationships, dependencies, communities, and navigation matter. | Direct document reading is simpler. |
+| `full` | Several projects, agents, corpora, authority boundaries, and maintenance processes must remain coherent. | A smaller profile removes the actual ambiguity. |
+
+Every layer can be installed directly. `living-knowledge` is the exception: it requires a `knowledge` corpus to maintain.
+
+## Knowledge or living knowledge?
+
+```text
+knowledge
+  = claims, sources, evidence, uncertainty, contradictions, and known unknowns
+  = changed through deliberate curation
+
+living knowledge
+  = a governed maintenance process applied to knowledge
+  = justified when correctness decays as external sources change
+```
+
+Use ordinary knowledge by default. Add living knowledge only when you can define:
+
+```text
+source watch boundary
+review cadence or trigger
+candidate comparison method
+verification standard
+publication gate
+destructive-change gate
+budget
+stop condition
+```
+
+See [`docs/KNOWLEDGE_LIFECYCLE.md`](./docs/KNOWLEDGE_LIFECYCLE.md).
 
 ## Document-guided onboarding
 
-`ONBOARDING.md` gives agents a disciplined way to “grill the user with documents” without administering a generic questionnaire:
+`ONBOARDING.md` teaches agents to “grill the user with documents” without administering a generic questionnaire:
 
 ```text
-inspect current documents and source artifacts
--> expose material gaps, assumptions, and authority questions
--> ask the highest-value targeted question
--> record the explicit answer in its primary organization file
+inspect current documents and sources
+-> classify facts, decisions, assumptions, contradictions, and unknowns
+-> select the highest-value unresolved question
+-> show the relevant document gap and consequence
+-> record the explicit answer in its primary local file
 -> preserve unresolved unknowns
--> verify the updated map
--> stop when enough is known for the current work
+-> verify
+-> stop when the current work is sufficiently grounded
 ```
 
-Agents should not ask for information already recoverable from sources, invent answers to complete templates, or infer authority from access. Every question should be tied to a file, decision, risk, or action it will change.
+Agents do not ask for information already recoverable from sources, infer authority from access, or invent answers to make templates look complete.
 
-## Build the organization
+## Skills, public skills, and trust
+
+The installed `skills` package separates:
 
 ```text
-constitution      what must remain true and how material change is approved
-doctrine          purpose, conduct, authority, evidence, incentives, and decision rules
-identity          actors, roles, delegation, privacy, and stopping authority
-agents            software actors composed from identity, skills, knowledge, models, and permissions
-project           bounded operating contexts with sources, decisions, risks, and open questions
-knowledge         one or more sourced, revisable corpora
-living-knowledge  optional maintenance for corpora that change frequently
-skills            reusable procedures with inputs, verification, and failure handling
-models            optional capability evidence and routing policy
-meta              audit, drift review, failure learning, revision, and retirement
+reviewed core procedures
+external public skill registry
+source and license records
+curation and validation machinery
 ```
 
-Use the whole system or only the layers that remove demonstrated ambiguity. The default `full` profile installs all ten layers. Named partial profiles remain valid and are verified against their own declared requirements.
+A public skill is not trusted by popularity or inclusion. Local adoption should inspect provenance, license, hidden tool use, prompt injection, credential access, mutation scope, verification, and fit with local authority.
 
-## Why not copy the principles?
+Installing a skill does not authorize execution. Installing an agent does not grant runtime authority.
 
-You can. Architectonic is intentionally file-native, runtime-neutral, and replaceable.
+## Loops
 
-The CLI earns its place when you need the same structure to be reproducibly installed, locally instantiated, mapped, semantically verified, versioned, compared, safely upgraded, and inspected across multiple workspaces. The files remain readable without the CLI.
+A loop is not “run the prompt forever.” A useful loop has:
+
+```text
+bounded objective
+trigger or schedule
+durable state outside the model
+work selection rule
+worker
+independent verifier
+evidence record
+cost and spawn budget
+human approval boundary
+stop or kill condition
+```
+
+Loop outputs become knowledge only after the knowledge layer’s evidence rules are satisfied. See [`docs/LOOPS_AND_GRAPHS.md`](./docs/LOOPS_AND_GRAPHS.md).
+
+## Graphs
+
+```bash
+npx architectonic graph --format both
+```
+
+`graph` extracts explicit Markdown links and wikilinks into rebuildable JSON and DOT projections under `.architectonic/derived/`. It reports broken links, ambiguous targets, orphans, and high-degree gravity wells.
+
+Canonical Markdown and recoverable sources remain authoritative. Obsidian may visualize the source files directly. Graphify, GraphRAG, or another graph engine may create richer derived projections with provenance. None is required for Architectonic to function.
+
+## Complementary systems
+
+Architectonic stands on its own as files, contracts, maps, and validation.
+
+- **OKF-style Markdown** strengthens portability, metadata, indexes, and progressive disclosure.
+- **LLM-wiki patterns** strengthen source-first compilation, inventory, query, audit, and quiet archives.
+- **GBrain-style architecture** strengthens the separation between a Git/Markdown system of record and replaceable retrieval or graph infrastructure.
+- **Second-brain methods** strengthen incremental capture, organization, distillation, expression, and outcome-oriented views.
+- **Obsidian and Graphify** are visualization or analysis surfaces.
+- **Workframe** may execute governed runs, leases, approvals, and artifacts. Architectonic supplies the durable organization and knowledge boundaries; it does not require Workframe.
+
+See [`docs/ECOSYSTEM_LESSONS.md`](./docs/ECOSYSTEM_LESSONS.md) and [`docs/INTEROPERABILITY.md`](./docs/INTEROPERABILITY.md).
 
 ## Commands
 
 ```bash
-npx architectonic init [name] --preset full
+npx architectonic recommend --need <description>
+npx architectonic init [name] --preset <layer|profile|a+b>
 npx architectonic add <layer|profile>
 npx architectonic onboard [--fix]
 npx architectonic map
+npx architectonic graph [--format json|dot|both]
 npx architectonic verify
 npx architectonic doctor
 npx architectonic status
@@ -79,21 +192,9 @@ npx architectonic upgrade [layer...]
 npx architectonic agent create --spec <file> --output <dir>
 ```
 
-`add constitution` installs only the constitution layer. `init --preset constitution` remains a deprecated compatibility alias for `init --preset full`.
-
 ## Claim discipline
 
-Architectonic distinguishes:
-
-```text
-design objective       intended effect, not yet measured
-mechanism demonstrated inspectable behavior supported by tests
-internally observed    observed in active use, not independently reproduced
-publicly benchmarked   reproduced from published fixtures, runs, and scoring
-externally replicated  independently reproduced under the published protocol
-```
-
-No claim should outrun its evidence. See `docs/CLAIMS.md`, `docs/MATURITY.md`, and `docs/EVALUATE.md`.
+Architectonic distinguishes design objectives, demonstrated mechanisms, internal observations, public benchmarks, and external replications. No claim should outrun its evidence. See [`docs/CLAIMS.md`](./docs/CLAIMS.md), [`docs/MATURITY.md`](./docs/MATURITY.md), and [`docs/EVALUATE.md`](./docs/EVALUATE.md).
 
 ## License
 
