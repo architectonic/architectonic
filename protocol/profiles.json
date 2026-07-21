@@ -1,18 +1,501 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "protocol_version": "0.2.0",
   "profiles": {
-    "full": ["constitution", "doctrine", "identity", "project", "skills", "knowledge", "models", "agents", "living-knowledge", "meta"],
-    "knowledge-system": ["constitution", "doctrine", "knowledge", "living-knowledge", "meta"],
-    "agent-system": ["constitution", "doctrine", "identity", "skills", "knowledge", "models", "agents", "meta"],
-    "project-system": ["constitution", "doctrine", "identity", "project", "skills", "knowledge", "agents", "meta"]
+    "full": [
+      "constitution",
+      "doctrine",
+      "identity",
+      "project",
+      "skills",
+      "knowledge",
+      "models",
+      "agents",
+      "living-knowledge",
+      "meta"
+    ],
+    "organization": [
+      "constitution",
+      "doctrine",
+      "identity",
+      "meta"
+    ],
+    "constitution": [
+      "constitution"
+    ],
+    "identity": [
+      "identity"
+    ],
+    "project": [
+      "project"
+    ],
+    "project-system": [
+      "project",
+      "knowledge",
+      "skills",
+      "meta"
+    ],
+    "knowledge": [
+      "knowledge"
+    ],
+    "knowledge-system": [
+      "knowledge",
+      "skills",
+      "meta"
+    ],
+    "living-knowledge-system": [
+      "knowledge",
+      "living-knowledge",
+      "skills",
+      "meta"
+    ],
+    "llm-wiki": [
+      "knowledge",
+      "living-knowledge",
+      "skills",
+      "meta"
+    ],
+    "second-brain": [
+      "identity",
+      "project",
+      "knowledge",
+      "skills",
+      "meta"
+    ],
+    "agent-team": [
+      "identity",
+      "skills",
+      "knowledge",
+      "models",
+      "agents",
+      "meta"
+    ],
+    "loop-system": [
+      "project",
+      "skills",
+      "knowledge",
+      "agents",
+      "meta"
+    ],
+    "graph-system": [
+      "knowledge",
+      "skills",
+      "meta"
+    ]
   },
   "profile_aliases": {
     "default": "full",
-    "solo": "full",
-    "organization": "full"
+    "org": "organization",
+    "wiki": "llm-wiki",
+    "brain": "second-brain",
+    "solo": "second-brain",
+    "agents": "agent-team",
+    "agent-system": "agent-team",
+    "loops": "loop-system",
+    "graph": "graph-system"
   },
-  "legacy_preset_aliases": {
-    "constitution": "full"
-  }
+  "profile_metadata": {
+    "full": {
+      "summary": "Complete organization with governance, projects, knowledge, agents, loops, and maintenance.",
+      "features": [
+        "graph",
+        "loops"
+      ],
+      "use_when": "Several projects, agents, corpora, or authority boundaries must remain coherent.",
+      "avoid_when": "A single bounded concern can be served by a standalone layer or smaller profile."
+    },
+    "organization": {
+      "summary": "Governance and actor model without requiring projects, knowledge, or runtime agents.",
+      "features": [],
+      "use_when": "A team or human-agent collaboration needs purpose, authority, privacy, and amendment rules.",
+      "avoid_when": "Only one project or corpus needs structure."
+    },
+    "constitution": {
+      "summary": "Standalone invariants, authority root, prohibited actions, and amendment rules.",
+      "features": [],
+      "use_when": "Only the non-negotiable boundary of a system needs to be made explicit.",
+      "avoid_when": "Operational decisions, actors, projects, or knowledge also need durable homes."
+    },
+    "identity": {
+      "summary": "Standalone actors, roles, authority, delegation, incentives, and privacy.",
+      "features": [],
+      "use_when": "The immediate ambiguity is who may decide, access, delegate, approve, or stop.",
+      "avoid_when": "No material actor or permission boundary exists."
+    },
+    "project": {
+      "summary": "One standalone project with sources, decisions, risks, unknowns, and handoff.",
+      "features": [],
+      "use_when": "A bounded initiative needs continuity but no broader organization is required.",
+      "avoid_when": "The work is one-off and does not need durable context."
+    },
+    "project-system": {
+      "summary": "A standalone project with reusable procedures, knowledge, and upkeep.",
+      "features": [
+        "graph"
+      ],
+      "use_when": "A durable project needs its own corpus, procedures, and maintenance without an organization layer.",
+      "avoid_when": "The project is short-lived or its knowledge already has a canonical external home."
+    },
+    "knowledge": {
+      "summary": "One manually curated knowledge corpus.",
+      "features": [
+        "graph"
+      ],
+      "use_when": "Claims, sources, contradictions, and unknowns need a durable home but change is human-driven.",
+      "avoid_when": "Correctness decays on an external clock and requires recurring review."
+    },
+    "knowledge-system": {
+      "summary": "Curated knowledge plus reusable procedures and maintenance of the system itself.",
+      "features": [
+        "graph"
+      ],
+      "use_when": "A corpus needs repeatable ingestion, query, audit, and retirement procedures.",
+      "avoid_when": "Sources change frequently enough to require governed recurring maintenance."
+    },
+    "living-knowledge-system": {
+      "summary": "Knowledge whose correctness decays as external sources change.",
+      "features": [
+        "graph"
+      ],
+      "use_when": "Regulations, markets, provider catalogs, security advisories, or other sources require scheduled review and publication gates.",
+      "avoid_when": "The corpus changes only when a human deliberately edits it."
+    },
+    "llm-wiki": {
+      "summary": "Source-first compiled wiki with inventory, quiet archives, datasets, outputs, and recurring audits.",
+      "features": [
+        "wiki",
+        "graph"
+      ],
+      "use_when": "Research sources should compound into indexed articles, queries, and derived outputs across sessions.",
+      "avoid_when": "A small set of stable notes does not need compilation or recurring audit."
+    },
+    "second-brain": {
+      "summary": "Personal or solo human-agent knowledge system organized around active outcomes.",
+      "features": [
+        "second-brain",
+        "graph"
+      ],
+      "use_when": "A person needs capture, organization, distillation, expression, projects, and durable context.",
+      "avoid_when": "The knowledge belongs to a governed team or regulated operational corpus."
+    },
+    "agent-team": {
+      "summary": "Multiple installed agents with skills, knowledge, model policy, authority, and upkeep.",
+      "features": [
+        "graph"
+      ],
+      "use_when": "Software actors need distinct roles, procedures, knowledge attachments, models, and review gates.",
+      "avoid_when": "One general agent and repository instructions are sufficient."
+    },
+    "loop-system": {
+      "summary": "Recurring or long-running agent work with state, budgets, verification, evidence, and human gates.",
+      "features": [
+        "loops",
+        "graph"
+      ],
+      "use_when": "Work must continue across runs, agents, schedules, or handoffs without relying on chat memory.",
+      "avoid_when": "The task can be completed safely in one bounded session."
+    },
+    "graph-system": {
+      "summary": "Canonical Markdown knowledge with rebuildable graph projections and graph-quality checks.",
+      "features": [
+        "graph"
+      ],
+      "use_when": "Relationships, dependencies, communities, or navigation matter more than a flat file list.",
+      "avoid_when": "A few documents can be read directly without graph analysis."
+    }
+  },
+  "need_rules": [
+    {
+      "id": "one-off",
+      "signals": [
+        "one-off",
+        "one off",
+        "throwaway",
+        "temporary script",
+        "single answer"
+      ],
+      "layers": [],
+      "features": [],
+      "no_install": true,
+      "reason": "The work does not appear to need durable organizational structure."
+    },
+    {
+      "id": "constitution",
+      "signals": [
+        "constitution",
+        "invariant",
+        "non-negotiable",
+        "amendment",
+        "prohibited action"
+      ],
+      "layers": [
+        "constitution"
+      ],
+      "features": [],
+      "reason": "The need concerns durable invariants and amendment boundaries."
+    },
+    {
+      "id": "organization",
+      "signals": [
+        "organization",
+        "company",
+        "team governance",
+        "human-ai org",
+        "human ai org"
+      ],
+      "layers": [
+        "constitution",
+        "doctrine",
+        "identity",
+        "meta"
+      ],
+      "features": [],
+      "reason": "The need spans purpose, authority, actors, and system upkeep."
+    },
+    {
+      "id": "identity",
+      "signals": [
+        "identity",
+        "actor",
+        "role",
+        "authority",
+        "delegation",
+        "permission",
+        "privacy"
+      ],
+      "layers": [
+        "identity"
+      ],
+      "features": [],
+      "reason": "The material ambiguity is who participates and what each actor may do."
+    },
+    {
+      "id": "project",
+      "signals": [
+        "project",
+        "repository",
+        "initiative",
+        "product",
+        "handoff",
+        "roadmap"
+      ],
+      "layers": [
+        "project"
+      ],
+      "features": [],
+      "reason": "The work is a bounded operating unit that needs sources, decisions, risks, and continuity."
+    },
+    {
+      "id": "knowledge",
+      "signals": [
+        "knowledge base",
+        "knowledge",
+        "corpus",
+        "research",
+        "documentation",
+        "wiki",
+        "okf",
+        "open knowledge format",
+        "llm retrieval",
+        "retrieval corpus"
+      ],
+      "layers": [
+        "knowledge"
+      ],
+      "features": [
+        "graph"
+      ],
+      "reason": "Claims, sources, uncertainty, and retrieval need a durable corpus."
+    },
+    {
+      "id": "living-knowledge",
+      "signals": [
+        "living knowledge",
+        "changing sources",
+        "regulation",
+        "regulatory",
+        "market",
+        "news",
+        "security advisory",
+        "provider catalog",
+        "current data",
+        "stale"
+      ],
+      "layers": [
+        "knowledge",
+        "living-knowledge",
+        "skills",
+        "meta"
+      ],
+      "features": [
+        "graph"
+      ],
+      "reason": "Correctness decays as external sources change, so recurring review and publication gates are justified."
+    },
+    {
+      "id": "llm-wiki",
+      "signals": [
+        "llm wiki",
+        "compiled wiki",
+        "source ingestion",
+        "topic wiki",
+        "thesis research"
+      ],
+      "layers": [
+        "knowledge",
+        "living-knowledge",
+        "skills",
+        "meta"
+      ],
+      "features": [
+        "wiki",
+        "graph"
+      ],
+      "reason": "The need is a source-first wiki that compounds across research, query, audit, and output cycles."
+    },
+    {
+      "id": "second-brain",
+      "signals": [
+        "second brain",
+        "personal knowledge",
+        "pkm",
+        "personal notes",
+        "capture organize distill express",
+        "para"
+      ],
+      "layers": [
+        "identity",
+        "project",
+        "knowledge",
+        "skills",
+        "meta"
+      ],
+      "features": [
+        "second-brain",
+        "graph"
+      ],
+      "reason": "The need is a personal, outcome-oriented knowledge system rather than an institutional corpus."
+    },
+    {
+      "id": "skills",
+      "signals": [
+        "reusable procedure",
+        "skill catalog",
+        "public skill",
+        "skills library",
+        "skill governance"
+      ],
+      "layers": [
+        "skills"
+      ],
+      "features": [],
+      "reason": "A recurring procedure needs explicit inputs, verification, failure handling, provenance, and risk review."
+    },
+    {
+      "id": "models",
+      "signals": [
+        "model catalog",
+        "model routing",
+        "model evaluation",
+        "fallback model",
+        "retrieval evaluation"
+      ],
+      "layers": [
+        "models"
+      ],
+      "features": [],
+      "reason": "Model or retrieval selection needs dated capability evidence, constraints, evaluation, and fallback policy."
+    },
+    {
+      "id": "meta",
+      "signals": [
+        "drift audit",
+        "system audit",
+        "retirement policy",
+        "maintenance policy",
+        "failure review"
+      ],
+      "layers": [
+        "meta"
+      ],
+      "features": [],
+      "reason": "The need concerns inspection, drift, failure learning, revision, or retirement of the system itself."
+    },
+    {
+      "id": "agents",
+      "signals": [
+        "agent team",
+        "multi-agent",
+        "multi agent",
+        "software actors",
+        "agent roles",
+        "model routing",
+        "agent skills",
+        "public skills",
+        "skill library"
+      ],
+      "layers": [
+        "identity",
+        "skills",
+        "knowledge",
+        "models",
+        "agents",
+        "meta"
+      ],
+      "features": [
+        "graph"
+      ],
+      "reason": "Distinct agents need roles, skills, knowledge attachments, model policy, and review gates."
+    },
+    {
+      "id": "loops",
+      "signals": [
+        "loop engineering",
+        "recurring",
+        "scheduled",
+        "heartbeat",
+        "long-running",
+        "long running",
+        "autonomous loop",
+        "continuous agent"
+      ],
+      "layers": [
+        "project",
+        "skills",
+        "knowledge",
+        "agents",
+        "meta"
+      ],
+      "features": [
+        "loops",
+        "graph"
+      ],
+      "reason": "Long-running work needs durable state, budgets, verification, evidence, and human-controlled stop conditions."
+    },
+    {
+      "id": "graph",
+      "signals": [
+        "knowledge graph",
+        "graph engineering",
+        "graphify",
+        "obsidian",
+        "wikilink",
+        "relationships",
+        "dependencies",
+        "gbrain",
+        "graph brain",
+        "graphrag",
+        "knowledge relationships"
+      ],
+      "layers": [
+        "knowledge",
+        "skills",
+        "meta"
+      ],
+      "features": [
+        "graph"
+      ],
+      "reason": "Relationships should be projected from canonical documents into a rebuildable graph."
+    }
+  ]
 }
