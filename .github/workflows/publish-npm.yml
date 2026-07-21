@@ -90,7 +90,7 @@ jobs:
           done
           echo "registry did not return ${{ steps.registry.outputs.package }}@${{ steps.registry.outputs.version }}"
           exit 1
-      - name: Verify a clean organization bootstrap from npm
+      - name: Verify adaptive consumer workflows from npm
         env:
           VERSION: ${{ steps.registry.outputs.version }}
           NO_COLOR: '1'
@@ -99,36 +99,42 @@ jobs:
           cd "$ROOT"
           npx --yes "architectonic@$VERSION" --version
           npx --yes "architectonic@$VERSION" --self-check
-          npx --yes "architectonic@$VERSION" init demo-organization --source npm
-          cd demo-organization
-          npx --yes "architectonic@$VERSION" onboard --json > onboard.json
-          node -e 'const fs=require("fs"); const x=JSON.parse(fs.readFileSync("onboard.json","utf8")); if (!x.ok || !Array.isArray(x.rows) || x.rows.length !== 10) { console.error(x); process.exit(1); }'
-          npx --yes "architectonic@$VERSION" verify --json > verify.json
-          node -e 'const fs=require("fs"); const x=JSON.parse(fs.readFileSync("verify.json","utf8")); if (!x.ok) { console.error(x); process.exit(1); }'
-          npx --yes "architectonic@$VERSION" map --json > map.json
-          node -e 'const fs=require("fs"); const x=JSON.parse(fs.readFileSync("map.json","utf8")); if (!Array.isArray(x.rows) || x.rows.length !== 10 || x.rows.some(r => !r.local_entry || !r.contract_entry)) { console.error(x); process.exit(1); }'
-          test -f AGENTS.md
-          test -f ONBOARDING.md
-          test -f organization/README.md
-          test -f organization/constitution.md
-          test -f organization/doctrine.md
-          test -f organization/actors.md
-          test -f organization/projects/index.md
-          test -f organization/skills/index.md
-          test -f organization/knowledge/index.md
-          test -f organization/models.md
-          test -f organization/agents/index.md
-          test -f organization/living-knowledge.md
-          test -f organization/meta.md
-          test -f skills/core/manifest.json
-          test -f skills/core/skills/document-guided-organization-bootstrap.md
+
+          npx --yes "architectonic@$VERSION" recommend --need "one-off throwaway script" --json > one-off.json
+          node -e 'const x=require("./one-off.json"); if (x.install !== false) { console.error(x); process.exit(1); }'
+          npx --yes "architectonic@$VERSION" recommend --need "changing regulatory corpus" --json > living.json
+          node -e 'const x=require("./living.json"); if (x.profile !== "living-knowledge-system") { console.error(x); process.exit(1); }'
+
+          npx --yes "architectonic@$VERSION" init standalone-project --preset project --source npm
+          npx --yes "architectonic@$VERSION" verify --dir standalone-project --json > project-verify.json
+          node -e 'const x=require("./project-verify.json"); if (!x.ok || x.results.length !== 1 || x.results[0].layer !== "project") { console.error(x); process.exit(1); }'
+
+          npx --yes "architectonic@$VERSION" init wiki --preset llm-wiki --source npm
+          npx --yes "architectonic@$VERSION" verify --dir wiki --json > wiki-verify.json
+          node -e 'const x=require("./wiki-verify.json"); if (!x.ok || !x.features.includes("wiki")) { console.error(x); process.exit(1); }'
+          npx --yes "architectonic@$VERSION" graph --dir wiki --format both --json > graph.json
+          node -e 'const x=require("./graph.json"); if (x.canonical !== false || !Array.isArray(x.files) || x.files.length !== 2) { console.error(x); process.exit(1); }'
+          test -f wiki/organization/knowledge/wiki/index.md
+          test -f wiki/organization/knowledge/.archive/README.md
+          test -f wiki/.architectonic/derived/graph.json
+          test -f wiki/skills/core/skills/adaptive-composition.md
+          test -f wiki/skills/core/skills/knowledge-lifecycle-design.md
+          test -f wiki/skills/core/skills/loop-engineering.md
+          test -f wiki/skills/core/skills/graph-projection.md
+          test -f wiki/skills/core/skills/public-skill-adoption.md
+
+          npx --yes "architectonic@$VERSION" init full --preset full --source npm
+          npx --yes "architectonic@$VERSION" onboard --dir full --json > full-onboard.json
+          node -e 'const x=require("./full-onboard.json"); if (!x.ok || x.rows.length !== 10) { console.error(x); process.exit(1); }'
+          npx --yes "architectonic@$VERSION" verify --dir full --json > full-verify.json
+          node -e 'const x=require("./full-verify.json"); if (!x.ok || x.results.length !== 10) { console.error(x); process.exit(1); }'
       - name: Report release success
         if: success()
         env:
           GH_TOKEN: ${{ github.token }}
           STATE: success
           CONTEXT: npm-release
-          DESCRIPTION: architectonic@${{ steps.registry.outputs.version }} published and consumer-tested
+          DESCRIPTION: architectonic@${{ steps.registry.outputs.version }} published and adaptive workflows tested
           TARGET_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           PAYLOAD="$(node -e 'process.stdout.write(JSON.stringify({state:process.env.STATE,context:process.env.CONTEXT,description:process.env.DESCRIPTION,target_url:process.env.TARGET_URL}))')"
@@ -144,7 +150,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           STATE: failure
           CONTEXT: npm-release
-          DESCRIPTION: npm release or consumer bootstrap failed
+          DESCRIPTION: npm release or adaptive consumer workflow failed
           TARGET_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           PAYLOAD="$(node -e 'process.stdout.write(JSON.stringify({state:process.env.STATE,context:process.env.CONTEXT,description:process.env.DESCRIPTION,target_url:process.env.TARGET_URL}))')"
