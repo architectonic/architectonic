@@ -1,6 +1,6 @@
 {
   "name": "architectonic",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Agent-readable operating protocol and CLI for human–AI organizations.",
   "license": "Apache-2.0",
   "type": "module",
@@ -18,7 +18,8 @@
     "docs",
     "protocol",
     "scripts",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ],
   "repository": {
     "type": "git",
