@@ -1,20 +1,19 @@
-# Publish architectonic via npm trusted publishing (OIDC).
-# npm: Package → Settings → Trusted publishing → GitHub Actions →
-#   repo architectonic/architectonic, workflow publish-npm.yml
 name: Publish npm
 
 on:
   push:
-    branches:
-      - main
-    tags:
-      - 'v[0-9]*.[0-9]*.[0-9]*'
+    branches: [main]
+    tags: ['v[0-9]*.[0-9]*.[0-9]*']
     paths:
-      - 'package.json'
-      - 'README.md'
-      - 'docs/**'
-      - 'bin/**'
-      - '.github/workflows/publish-npm.yml'
+      - package.json
+      - README.md
+      - bin/**
+      - lib/**
+      - docs/**
+      - protocol/**
+      - scripts/**
+      - test/**
+      - .github/workflows/publish-npm.yml
   workflow_dispatch:
 
 concurrency:
@@ -24,69 +23,122 @@ concurrency:
 permissions:
   id-token: write
   contents: read
+  statuses: write
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate source
+        run: |
+          npm test
+          npm run check
+          npm run pack:verify
       - name: Tag matches package version
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           TAG="${GITHUB_REF#refs/tags/v}"
           VER="$(node -p "require('./package.json').version")"
-          if [ "$VER" != "$TAG" ]; then
-            echo "version mismatch: package.json is $VER but tag is v$TAG"
-            exit 1
-          fi
-          echo "OK: architectonic at $TAG"
-
-      - uses: actions/setup-node@v4
+          test "$VER" = "$TAG" || { echo "version mismatch: package.json is $VER but tag is v$TAG"; exit 1; }
+      - name: Build exact package artifact
+        id: pack
+        run: |
+          npm pack --json > pack.json
+          FILE="$(node -e "const x=require('./pack.json'); process.stdout.write(x[0].filename)")"
+          echo "file=$FILE" >> "$GITHUB_OUTPUT"
+      - name: Preserve exact release artifact
+        uses: actions/upload-artifact@v4
         with:
-          node-version: '22'
-
-      - name: Smoke test
-        run: node bin/architectonic.js --help
-
-      - name: npm CLI (trusted publishing needs >= 11.5.1)
+          name: architectonic-npm-package
+          path: ${{ steps.pack.outputs.file }}
+          if-no-files-found: error
+          retention-days: 14
+      - name: Validate packed artifact
+        run: |
+          mkdir unpacked
+          tar -xzf "${{ steps.pack.outputs.file }}" -C unpacked
+          node unpacked/package/bin/architectonic.js --self-check
+      - name: Install current npm CLI
         run: npm install -g npm@latest
-
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
-
       - name: Check registry version
         id: registry
         run: |
+          PKG="$(node -p "require('./package.json').name")"
           VER="$(node -p "require('./package.json').version")"
-          CURRENT="$(npm view architectonic version 2>/dev/null || true)"
-          echo "package_version=$VER" >> "$GITHUB_OUTPUT"
-          echo "registry_version=$CURRENT" >> "$GITHUB_OUTPUT"
-          if [ "$CURRENT" = "$VER" ]; then
-            echo "already_published=true" >> "$GITHUB_OUTPUT"
-            echo "architectonic@$VER is already published; skipping publish"
-          else
-            echo "already_published=false" >> "$GITHUB_OUTPUT"
-            echo "Publishing architectonic@$VER; registry currently has ${CURRENT:-none}"
-          fi
-
+          CURRENT="$(npm view "$PKG" version 2>/dev/null || true)"
+          echo "package=$PKG" >> "$GITHUB_OUTPUT"
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+          test "$CURRENT" = "$VER" && echo "published=true" >> "$GITHUB_OUTPUT" || echo "published=false" >> "$GITHUB_OUTPUT"
       - name: Publish
-        if: steps.registry.outputs.already_published != 'true'
-        run: npm publish --access public
-
+        if: steps.registry.outputs.published != 'true'
+        run: npm publish "${{ steps.pack.outputs.file }}" --access public
       - name: Verify registry
-        if: steps.registry.outputs.already_published != 'true'
         run: |
-          VER="${{ steps.registry.outputs.package_version }}"
           for i in $(seq 1 12); do
-            v="$(npm view architectonic version 2>/dev/null || true)"
-            if [ "$v" = "$VER" ]; then
-              echo "OK: architectonic@$v"
-              exit 0
-            fi
+            CURRENT="$(npm view "${{ steps.registry.outputs.package }}" version 2>/dev/null || true)"
+            test "$CURRENT" = "${{ steps.registry.outputs.version }}" && exit 0
             sleep 5
           done
-          echo "npm view architectonic did not show $VER (last: $v)"
+          echo "registry did not return ${{ steps.registry.outputs.package }}@${{ steps.registry.outputs.version }}"
           exit 1
+      - name: Verify a clean organization bootstrap from npm
+        env:
+          VERSION: ${{ steps.registry.outputs.version }}
+          NO_COLOR: '1'
+        run: |
+          ROOT="$(mktemp -d)"
+          cd "$ROOT"
+          npx --yes "architectonic@$VERSION" --version
+          npx --yes "architectonic@$VERSION" --self-check
+          npx --yes "architectonic@$VERSION" init demo-organization --source npm
+          cd demo-organization
+          npx --yes "architectonic@$VERSION" verify --json > verify.json
+          node -e 'const fs=require("fs"); const x=JSON.parse(fs.readFileSync("verify.json","utf8")); if (!x.ok) { console.error(x); process.exit(1); }'
+          npx --yes "architectonic@$VERSION" map --json > map.json
+          node -e 'const fs=require("fs"); const x=JSON.parse(fs.readFileSync("map.json","utf8")); if (!Array.isArray(x.layers) || x.layers.length !== 10) { console.error(x); process.exit(1); }'
+          test -f AGENTS.md
+          test -f constitution/constitution.md
+          test -f doctrine/doctrine.md
+          test -f identity/START_HERE.md
+          test -f project/START_HERE.md
+          test -f skills/core/manifest.json
+      - name: Report release success
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STATE: success
+          CONTEXT: npm-release
+          DESCRIPTION: architectonic@${{ steps.registry.outputs.version }} published and consumer-tested
+          TARGET_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          PAYLOAD="$(node -e 'process.stdout.write(JSON.stringify({state:process.env.STATE,context:process.env.CONTEXT,description:process.env.DESCRIPTION,target_url:process.env.TARGET_URL}))')"
+          curl --fail-with-body -sS -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+            -d "$PAYLOAD"
+      - name: Report release failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STATE: failure
+          CONTEXT: npm-release
+          DESCRIPTION: npm release or consumer bootstrap failed
+          TARGET_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          PAYLOAD="$(node -e 'process.stdout.write(JSON.stringify({state:process.env.STATE,context:process.env.CONTEXT,description:process.env.DESCRIPTION,target_url:process.env.TARGET_URL}))')"
+          curl --fail-with-body -sS -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+            -d "$PAYLOAD"

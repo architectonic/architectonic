@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "protocol_version": "0.2.0",
+  "profiles": {
+    "full": ["constitution", "doctrine", "identity", "project", "skills", "knowledge", "models", "agents", "living-knowledge", "meta"],
+    "knowledge-system": ["constitution", "doctrine", "knowledge", "living-knowledge", "meta"],
+    "agent-system": ["constitution", "doctrine", "identity", "skills", "knowledge", "models", "agents", "meta"],
+    "project-system": ["constitution", "doctrine", "identity", "project", "skills", "knowledge", "agents", "meta"]
+  },
+  "profile_aliases": {
+    "default": "full",
+    "solo": "full",
+    "organization": "full"
+  },
+  "legacy_preset_aliases": {
+    "constitution": "full"
+  }
+}

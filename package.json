@@ -1,19 +1,23 @@
 {
   "name": "architectonic",
-  "version": "0.0.12",
-  "description": "CLI for composing Architectonic layers into a workspace for systemic human-AI collaboration.",
+  "version": "0.2.0",
+  "description": "Agent-readable operating protocol and CLI for human–AI organizations.",
   "license": "Apache-2.0",
   "type": "module",
   "bin": {
     "architectonic": "bin/architectonic.js"
   },
   "scripts": {
-    "check": "node --check bin/architectonic.js",
-    "test": "node --check bin/architectonic.js && node bin/architectonic.js --help > /dev/null"
+    "check": "node --check bin/architectonic.js && node bin/architectonic.js --self-check",
+    "test": "node --test test/*.test.js",
+    "pack:verify": "node scripts/verify-pack.mjs"
   },
   "files": [
     "bin",
+    "lib",
     "docs",
+    "protocol",
+    "scripts",
     "README.md"
   ],
   "repository": {
@@ -25,16 +29,11 @@
   },
   "keywords": [
     "architectonic",
-    "constitution",
-    "doctrine",
-    "identity",
-    "project",
-    "skills",
-    "knowledge",
-    "models",
     "agents",
-    "living-knowledge",
-    "meta",
+    "knowledge-base",
+    "human-ai",
+    "governance",
+    "provenance",
     "cli"
   ]
 }
