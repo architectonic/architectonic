@@ -7,6 +7,7 @@ on:
     paths:
       - package.json
       - README.md
+      - CHANGELOG.md
       - bin/**
       - lib/**
       - docs/**
@@ -100,16 +101,27 @@ jobs:
           npx --yes "architectonic@$VERSION" --self-check
           npx --yes "architectonic@$VERSION" init demo-organization --source npm
           cd demo-organization
+          npx --yes "architectonic@$VERSION" onboard --json > onboard.json
+          node -e 'const fs=require("fs"); const x=JSON.parse(fs.readFileSync("onboard.json","utf8")); if (!x.ok || !Array.isArray(x.rows) || x.rows.length !== 10) { console.error(x); process.exit(1); }'
           npx --yes "architectonic@$VERSION" verify --json > verify.json
           node -e 'const fs=require("fs"); const x=JSON.parse(fs.readFileSync("verify.json","utf8")); if (!x.ok) { console.error(x); process.exit(1); }'
           npx --yes "architectonic@$VERSION" map --json > map.json
-          node -e 'const fs=require("fs"); const x=JSON.parse(fs.readFileSync("map.json","utf8")); if (!Array.isArray(x.rows) || x.rows.length !== 10) { console.error(x); process.exit(1); }'
+          node -e 'const fs=require("fs"); const x=JSON.parse(fs.readFileSync("map.json","utf8")); if (!Array.isArray(x.rows) || x.rows.length !== 10 || x.rows.some(r => !r.local_entry || !r.contract_entry)) { console.error(x); process.exit(1); }'
           test -f AGENTS.md
-          test -f constitution/constitution.md
-          test -f doctrine/doctrine.md
-          test -f identity/START_HERE.md
-          test -f project/START_HERE.md
+          test -f ONBOARDING.md
+          test -f organization/README.md
+          test -f organization/constitution.md
+          test -f organization/doctrine.md
+          test -f organization/actors.md
+          test -f organization/projects/index.md
+          test -f organization/skills/index.md
+          test -f organization/knowledge/index.md
+          test -f organization/models.md
+          test -f organization/agents/index.md
+          test -f organization/living-knowledge.md
+          test -f organization/meta.md
           test -f skills/core/manifest.json
+          test -f skills/core/skills/document-guided-organization-bootstrap.md
       - name: Report release success
         if: success()
         env:
