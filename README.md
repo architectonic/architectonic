@@ -141,7 +141,7 @@ A loop is not “run the prompt forever.” A useful loop has:
 ```text
 bounded objective
 trigger or schedule
-durable state outside the model
+one canonical rail ledger outside the model
 work selection rule
 worker
 independent verifier
@@ -152,6 +152,14 @@ stop or kill condition
 ```
 
 Loop outputs become knowledge only after the knowledge layer’s evidence rules are satisfied. See [`docs/LOOPS_AND_GRAPHS.md`](./docs/LOOPS_AND_GRAPHS.md).
+
+## Rails
+
+`architectonic-rail` defines one canonical work ledger with dependency-aware
+selection, claims, review, evidence, and human gates. Backlog, queue, and now are
+views over that ledger. Projects do not need a rail when work can be completed
+safely in one bounded session. The current package is a local reference pending
+separate publication.
 
 ## Graphs
 

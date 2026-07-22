@@ -16,6 +16,7 @@ const layers = {
   knowledge: ["architectonic-knowledge", "knowledge.md"],
   models: ["architectonic-models", "README.md"],
   agents: ["architectonic-agents", "README.md"],
+  rail: ["architectonic-rail", "rail.md"],
   "living-knowledge": ["architectonic-living-knowledge", "living-knowledge.md"],
   meta: ["architectonic-meta", "meta.md"],
 };
@@ -97,8 +98,8 @@ test("recommend distinguishes changing knowledge from ordinary knowledge", () =>
   assert.equal(JSON.parse(stable.stdout).layers.includes("living-knowledge"), false);
 });
 
-test("constitution, identity, and project initialize as standalone systems", () => {
-  for (const preset of ["constitution", "identity", "project"]) {
+test("constitution, identity, project, and rail initialize as standalone systems", () => {
+  for (const preset of ["constitution", "identity", "project", "rail"]) {
     withTemp((temp) => {
       const workspace = initWorkspace(temp, preset, preset);
       const manifest = JSON.parse(fs.readFileSync(path.join(workspace, "architectonic.json"), "utf8"));
@@ -111,7 +112,7 @@ test("constitution, identity, and project initialize as standalone systems", () 
 test("project-system is standalone from organization governance", () => withTemp((temp) => {
   const workspace = initWorkspace(temp, "project-system", "project-system");
   const manifest = JSON.parse(fs.readFileSync(path.join(workspace, "architectonic.json"), "utf8"));
-  assert.deepEqual(Object.keys(manifest.layers), ["project", "knowledge", "skills", "meta"]);
+  assert.deepEqual(Object.keys(manifest.layers), ["project", "rail", "knowledge", "skills", "meta"]);
   assert.equal(manifest.layers.constitution, undefined);
   assert.equal(manifest.layers.identity, undefined);
   assert.equal(run(["verify", "--dir", workspace, "--json"]).status, 0);
@@ -128,6 +129,7 @@ test("knowledge-system excludes living maintenance while living-knowledge-system
     const workspace = initWorkspace(temp, "living", "living-knowledge-system");
     const manifest = JSON.parse(fs.readFileSync(path.join(workspace, "architectonic.json"), "utf8"));
     assert.equal(Boolean(manifest.layers["living-knowledge"]), true);
+    assert.equal(Boolean(manifest.layers.rail), true);
     assert.equal(fs.existsSync(path.join(workspace, "organization", "living-knowledge.md")), true);
     assert.equal(fs.existsSync(path.join(workspace, "organization", "knowledge", "wiki", "index.md")), false);
   });

@@ -59,13 +59,21 @@
       "standalone": true,
       "companions": ["identity", "skills", "knowledge", "models", "meta"]
     },
+    "rail": {
+      "packageName": "architectonic-rail",
+      "entry": "rail.md",
+      "purpose": "one canonical work ledger, dependency-aware selection, review, evidence, and human gates",
+      "localEntry": "organization/rail.md",
+      "standalone": true,
+      "companions": ["project", "identity", "skills", "agents"]
+    },
     "living-knowledge": {
       "packageName": "architectonic-living-knowledge",
       "entry": "living-knowledge.md",
       "purpose": "governed maintenance for frequently changing knowledge corpora",
       "localEntry": "organization/living-knowledge.md",
       "standalone": false,
-      "operationalRequires": ["knowledge"],
+      "operationalRequires": ["knowledge", "rail"],
       "companions": ["skills", "meta"]
     },
     "meta": {

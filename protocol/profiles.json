@@ -11,6 +11,7 @@
       "knowledge",
       "models",
       "agents",
+      "rail",
       "living-knowledge",
       "meta"
     ],
@@ -29,8 +30,12 @@
     "project": [
       "project"
     ],
+    "rail": [
+      "rail"
+    ],
     "project-system": [
       "project",
+      "rail",
       "knowledge",
       "skills",
       "meta"
@@ -46,12 +51,14 @@
     "living-knowledge-system": [
       "knowledge",
       "living-knowledge",
+      "rail",
       "skills",
       "meta"
     ],
     "llm-wiki": [
       "knowledge",
       "living-knowledge",
+      "rail",
       "skills",
       "meta"
     ],
@@ -68,10 +75,12 @@
       "knowledge",
       "models",
       "agents",
+      "rail",
       "meta"
     ],
     "loop-system": [
       "project",
+      "rail",
       "skills",
       "knowledge",
       "agents",
@@ -99,7 +108,8 @@
       "summary": "Complete organization with governance, projects, knowledge, agents, loops, and maintenance.",
       "features": [
         "graph",
-        "loops"
+        "loops",
+        "work-graph"
       ],
       "use_when": "Several projects, agents, corpora, or authority boundaries must remain coherent.",
       "avoid_when": "A single bounded concern can be served by a standalone layer or smaller profile."
@@ -128,10 +138,20 @@
       "use_when": "A bounded initiative needs continuity but no broader organization is required.",
       "avoid_when": "The work is one-off and does not need durable context."
     },
+    "rail": {
+      "summary": "One canonical work ledger with dependencies, claims, review, evidence, and human gates.",
+      "features": [
+        "work-graph",
+        "loops"
+      ],
+      "use_when": "Work must survive a session or cross a human, role, agent, dependency, review, or approval boundary.",
+      "avoid_when": "A bounded task can be completed and verified in one session without durable coordination."
+    },
     "project-system": {
       "summary": "A standalone project with reusable procedures, knowledge, and upkeep.",
       "features": [
-        "graph"
+        "graph",
+        "work-graph"
       ],
       "use_when": "A durable project needs its own corpus, procedures, and maintenance without an organization layer.",
       "avoid_when": "The project is short-lived or its knowledge already has a canonical external home."
@@ -139,7 +159,8 @@
     "knowledge": {
       "summary": "One manually curated knowledge corpus.",
       "features": [
-        "graph"
+        "graph",
+        "work-graph"
       ],
       "use_when": "Claims, sources, contradictions, and unknowns need a durable home but change is human-driven.",
       "avoid_when": "Correctness decays on an external clock and requires recurring review."
@@ -164,7 +185,8 @@
       "summary": "Source-first compiled wiki with inventory, quiet archives, datasets, outputs, and recurring audits.",
       "features": [
         "wiki",
-        "graph"
+        "graph",
+        "work-graph"
       ],
       "use_when": "Research sources should compound into indexed articles, queries, and derived outputs across sessions.",
       "avoid_when": "A small set of stable notes does not need compilation or recurring audit."
@@ -181,7 +203,8 @@
     "agent-team": {
       "summary": "Multiple installed agents with skills, knowledge, model policy, authority, and upkeep.",
       "features": [
-        "graph"
+        "graph",
+        "work-graph"
       ],
       "use_when": "Software actors need distinct roles, procedures, knowledge attachments, models, and review gates.",
       "avoid_when": "One general agent and repository instructions are sufficient."
@@ -190,7 +213,8 @@
       "summary": "Recurring or long-running agent work with state, budgets, verification, evidence, and human gates.",
       "features": [
         "loops",
-        "graph"
+        "graph",
+        "work-graph"
       ],
       "use_when": "Work must continue across runs, agents, schedules, or handoffs without relying on chat memory.",
       "avoid_when": "The task can be completed safely in one bounded session."
@@ -286,6 +310,29 @@
       "reason": "The work is a bounded operating unit that needs sources, decisions, risks, and continuity."
     },
     {
+      "id": "rail",
+      "signals": [
+        "work rail",
+        "work ledger",
+        "work graph",
+        "task graph",
+        "agent graph",
+        "backlog",
+        "work queue",
+        "kanban",
+        "ticket workflow",
+        "agent handoff"
+      ],
+      "layers": [
+        "rail"
+      ],
+      "features": [
+        "loops",
+        "work-graph"
+      ],
+      "reason": "Durable work needs one canonical ledger with dependencies, claims, review, evidence, and human gates."
+    },
+    {
       "id": "knowledge",
       "signals": [
         "knowledge base",
@@ -324,6 +371,7 @@
       "layers": [
         "knowledge",
         "living-knowledge",
+        "rail",
         "skills",
         "meta"
       ],
@@ -344,6 +392,7 @@
       "layers": [
         "knowledge",
         "living-knowledge",
+        "rail",
         "skills",
         "meta"
       ],
@@ -440,6 +489,7 @@
         "knowledge",
         "models",
         "agents",
+        "rail",
         "meta"
       ],
       "features": [
@@ -461,6 +511,7 @@
       ],
       "layers": [
         "project",
+        "rail",
         "skills",
         "knowledge",
         "agents",
@@ -468,7 +519,8 @@
       ],
       "features": [
         "loops",
-        "graph"
+        "graph",
+        "work-graph"
       ],
       "reason": "Long-running work needs durable state, budgets, verification, evidence, and human-controlled stop conditions."
     },
@@ -476,12 +528,9 @@
       "id": "graph",
       "signals": [
         "knowledge graph",
-        "graph engineering",
         "graphify",
         "obsidian",
         "wikilink",
-        "relationships",
-        "dependencies",
         "gbrain",
         "graph brain",
         "graphrag",

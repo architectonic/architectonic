@@ -65,6 +65,8 @@ Adopted lessons:
 - observability should measure outcomes, cost, failure, and review burden;
 - humans retain authority over consequential or irreversible effects.
 
+Recurring work consumes one canonical rail ledger. Backlog, queue, now, scheduler state, and dashboards are projections or transports rather than independent work authorities.
+
 ## Graph engineering
 
 References include Graphify-style extraction pipelines and Microsoft GraphRAG patterns.
@@ -76,6 +78,8 @@ Adopted lessons:
 - communities and hierarchical summaries can improve global navigation;
 - graph-quality work includes broken links, orphans, ambiguity, overloaded nodes, and missing bridges;
 - graph output remains a derived projection over canonical sources.
+
+Knowledge graphs and work graphs are different projections. Knowledge graphs connect claims and sources; work graphs connect tasks, dependencies, roles, reviews, gates, and evidence. A loop executes one bounded node in the work graph.
 
 ## Agent Skills
 

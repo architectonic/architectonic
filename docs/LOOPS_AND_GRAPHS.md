@@ -38,6 +38,16 @@ A successful run does not make every generated claim true. Promote outputs into 
 
 ## Graph engineering
 
+Two graph classes must remain distinct:
+
+```text
+knowledge graph      documents, claims, concepts, sources, and relationships
+organization graph   projects, roles, authority, and skills
+work graph           ledger items, dependencies, claims, reviews, gates, and evidence
+```
+
+The built-in `architectonic graph` command produces a knowledge/document projection. The `architectonic-rail` layer defines the canonical work-ledger contract from which a work graph may be projected. Neither projection replaces its sources.
+
 A graph projection helps agents navigate relationships that are difficult to recover from a flat tree.
 
 Architectonic’s built-in projection extracts only explicit links:

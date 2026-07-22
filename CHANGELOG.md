@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Add `rail` as a standalone layer and bind recurring loop and living-knowledge profiles to one canonical work ledger.
+- Distinguish knowledge graphs from organization and work graphs.
+- Define backlog, queue, and now as views rather than competing work authorities.
+
 ## 0.3.0
 
 - Add deterministic `recommend` guidance that can select no install, one standalone layer, a named profile, or an exact custom composition.
