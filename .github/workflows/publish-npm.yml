@@ -125,9 +125,9 @@ jobs:
 
           npx --yes "architectonic@$VERSION" init full --preset full --source npm
           npx --yes "architectonic@$VERSION" onboard --dir full --json > full-onboard.json
-          node -e 'const x=require("./full-onboard.json"); if (!x.ok || x.rows.length !== 10) { console.error(x); process.exit(1); }'
+          node -e 'const x=require("./full-onboard.json"), expected=Object.keys(require("./full/architectonic.json").layers).length; if (!x.ok || x.rows.length !== expected) { console.error({expected, result:x}); process.exit(1); }'
           npx --yes "architectonic@$VERSION" verify --dir full --json > full-verify.json
-          node -e 'const x=require("./full-verify.json"); if (!x.ok || x.results.length !== 10) { console.error(x); process.exit(1); }'
+          node -e 'const x=require("./full-verify.json"), expected=Object.keys(require("./full/architectonic.json").layers).length; if (!x.ok || x.results.length !== expected) { console.error({expected, result:x}); process.exit(1); }'
       - name: Report release success
         if: success()
         env:
