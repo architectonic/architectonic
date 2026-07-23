@@ -1,10 +1,12 @@
 # Changelog
 
-## Unreleased
+## 0.4.0
 
 - Add `rail` as a standalone layer and bind recurring loop and living-knowledge profiles to one canonical work ledger.
+- Scaffold `operations/ledger.json` from the installed Rail package, record its path in `architectonic.json`, and validate it through the installed Rail CLI.
 - Distinguish knowledge graphs from organization and work graphs.
 - Define backlog, queue, and now as views rather than competing work authorities.
+- Reject manifest-controlled paths that escape the workspace, including traversal, absolute, root, and symlink targets, before inspection or mutation.
 
 ## 0.3.0
 

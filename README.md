@@ -52,7 +52,7 @@ npx architectonic verify
 npx architectonic map
 ```
 
-`init` installs upstream contracts and creates editable files under `organization/`. Local facts, authority, decisions, projects, knowledge, and policy belong in `organization/`; installed packages remain replaceable.
+`init` installs upstream contracts and creates editable files under `organization/`. Local facts, authority, decisions, projects, knowledge, and policy belong in `organization/`; installed packages remain replaceable. When Rail is selected, the CLI also creates and validates the one canonical `operations/ledger.json`.
 
 ## Adaptive profiles
 
@@ -61,6 +61,7 @@ npx architectonic map
 | `constitution` | Only invariants, prohibited actions, authority root, and amendment rules need a durable home. | Operational context also needs to be modeled. |
 | `identity` | The immediate ambiguity is actors, roles, authority, delegation, incentives, or privacy. | No material actor boundary exists. |
 | `project` | One bounded initiative needs sources, decisions, risks, unknowns, and handoff. | The task is disposable. |
+| `rail` | Durable work crosses a session, role, dependency, review, or approval boundary. | One bounded session can complete and verify the work. |
 | `project-system` | A standalone project also needs its own corpus, procedures, and upkeep. | Existing external systems already own those concerns. |
 | `organization` | A team needs purpose, governance, actors, privacy, and maintenance. | Only one project or corpus needs structure. |
 | `knowledge` | One corpus is curated deliberately by humans. | Correctness decays as external sources change. |
@@ -158,8 +159,9 @@ Loop outputs become knowledge only after the knowledge layer’s evidence rules 
 `architectonic-rail` defines one canonical work ledger with dependency-aware
 selection, claims, review, evidence, and human gates. Backlog, queue, and now are
 views over that ledger. Projects do not need a rail when work can be completed
-safely in one bounded session. The current package is a local reference pending
-separate publication.
+safely in one bounded session. The canonical contract and CLI are published from
+[`architectonic/rail`](https://github.com/architectonic/rail); Rail-enabled
+workspaces bind `architectonic.json` to `operations/ledger.json`.
 
 ## Graphs
 

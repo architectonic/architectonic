@@ -64,6 +64,9 @@
       "entry": "rail.md",
       "purpose": "one canonical work ledger, dependency-aware selection, review, evidence, and human gates",
       "localEntry": "organization/rail.md",
+      "ledgerPath": "operations/ledger.json",
+      "ledgerTemplate": "templates/ledger.json",
+      "validator": "bin/architectonic-rail.js",
       "standalone": true,
       "companions": ["project", "identity", "skills", "agents"]
     },

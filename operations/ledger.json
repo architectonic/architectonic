@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "project": "architectonic-cli",
+  "updated": "2026-07-23",
+  "items": [
+    {
+      "id": "architectonic-managed-path-containment-001",
+      "title": "Contain every manifest-controlled layer path before inspection or mutation.",
+      "status": "done",
+      "priority": "P0",
+      "owner_role": "coder",
+      "reviewer_role": "security-reviewer",
+      "acceptance": [
+        "reject traversal and absolute manifest paths",
+        "reject paths that resolve to the workspace root",
+        "reject symlinks whose canonical target escapes the workspace",
+        "accept valid existing and not-yet-existing nested paths",
+        "apply one resolver before update, upgrade, remove, inspection, hashing, diff, graph, map, and agent instantiation",
+        "prove that force cannot bypass containment",
+        "pass package, CLI, packed-artifact, and real Rail integration checks"
+      ],
+      "depends_on": [],
+      "evidence": [
+        "test/managed-path.test.js: traversal, absolute, root, missing nested, and symlink containment cases pass",
+        "test/cli.test.js: Rail initialization, repair, and invalid-state verification cases pass",
+        "npm.cmd test: 17/17 tests passed on 2026-07-23",
+        "npm.cmd run check: self-check passed with 117 assertions on 2026-07-23",
+        "npm.cmd run pack:verify: packed artifact self-check passed with 117 assertions on 2026-07-23"
+      ],
+      "sources": [
+        "docs/audits/2026-07-27-monday-hard-findings.md",
+        "lib/runtime.js",
+        "lib/manage.js",
+        "lib/inspect.js",
+        "lib/graph.js",
+        "test/managed-path.test.js"
+      ],
+      "completed_at": "2026-07-23T01:24:50-03:00",
+      "extensions": {
+        "value_type": "security_release_gate",
+        "external_action_allowed": true,
+        "acceptance_result": "All acceptance checks passed; the release stop line is cleared."
+      }
+    }
+  ]
+}

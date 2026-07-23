@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import test from "node:test";
+import { npmInvocation } from "../lib/runtime.js";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const CLI = path.join(ROOT, "bin", "architectonic.js");
@@ -46,6 +47,31 @@ function makeFixtures(temp) {
       status: "experimental",
     }, null, 2)}\n`);
     fs.writeFileSync(path.join(dir, entry), `# ${layer}\n`);
+    if (layer === "rail") {
+      fs.mkdirSync(path.join(dir, "templates"), { recursive: true });
+      fs.mkdirSync(path.join(dir, "bin"), { recursive: true });
+      fs.writeFileSync(path.join(dir, "templates", "ledger.json"), `${JSON.stringify({
+        schema_version: "1.0",
+        project: "replace-with-project-id",
+        updated: "YYYY-MM-DD",
+        items: [],
+      }, null, 2)}\n`);
+      fs.writeFileSync(path.join(dir, "bin", "architectonic-rail.js"), `#!/usr/bin/env node
+import fs from "node:fs";
+const file = process.argv[3];
+let errors = [];
+try {
+  const ledger = JSON.parse(fs.readFileSync(file, "utf8"));
+  if (ledger.schema_version !== "1.0") errors.push("schema_version must be 1.0");
+  if (!ledger.project) errors.push("project is required");
+  if (!ledger.updated) errors.push("updated is required");
+  if (!Array.isArray(ledger.items)) errors.push("items must be an array");
+  for (const item of ledger.items || []) if (item.status === "done" && !item.evidence?.length) errors.push(item.id + " is done without evidence");
+} catch (error) { errors = [error.message]; }
+console.log(JSON.stringify({ ok: errors.length === 0, errors, warnings: [] }));
+process.exitCode = errors.length ? 1 : 0;
+`);
+    }
     spawnSync("git", ["init", "-q"], { cwd: dir });
     spawnSync("git", ["add", "."], { cwd: dir });
     spawnSync("git", ["-c", "user.name=Test", "-c", "user.email=test@example.com", "commit", "-qm", "fixture"], { cwd: dir });
@@ -68,7 +94,10 @@ function withTemp(callback) {
 }
 
 test("version, self-check, and adaptive help are executable", () => {
-  assert.match(run(["--version"]).stdout, /^0\.3\.0\s*$/);
+  const npm = npmInvocation(["--version"]);
+  const npmVersion = spawnSync(npm.command, npm.args, { encoding: "utf8" });
+  assert.equal(npmVersion.status, 0, npmVersion.stderr || npmVersion.stdout);
+  assert.match(run(["--version"]).stdout, /^0\.4\.0\s*$/);
   const checked = run(["--self-check"]);
   assert.equal(checked.status, 0, checked.stderr);
   assert.match(checked.stdout, /assertions/);
@@ -104,6 +133,12 @@ test("constitution, identity, project, and rail initialize as standalone systems
       const workspace = initWorkspace(temp, preset, preset);
       const manifest = JSON.parse(fs.readFileSync(path.join(workspace, "architectonic.json"), "utf8"));
       assert.deepEqual(Object.keys(manifest.layers), [preset]);
+      if (preset === "rail") {
+        assert.equal(manifest.rail.ledger_path, "./operations/ledger.json");
+        const ledger = JSON.parse(fs.readFileSync(path.join(workspace, "operations", "ledger.json"), "utf8"));
+        assert.equal(ledger.schema_version, "1.0");
+        assert.equal(ledger.project, "rail");
+      }
       assert.equal(run(["verify", "--dir", workspace, "--json"]).status, 0);
     });
   }
@@ -179,6 +214,35 @@ test("onboard repairs missing profile-specific files", () => withTemp((temp) => 
   assert.equal(repaired.status, 0, repaired.stderr);
   assert.equal(fs.existsSync(localEntry), true);
   assert.equal(run(["verify", "--dir", workspace, "--json"]).status, 0);
+}));
+
+test("onboard repairs the canonical rail ledger and verify rejects invalid work state", () => withTemp((temp) => {
+  const workspace = initWorkspace(temp, "rail-workspace", "rail");
+  const ledgerPath = path.join(workspace, "operations", "ledger.json");
+  fs.rmSync(ledgerPath);
+  let verified = run(["verify", "--dir", workspace, "--json"]);
+  assert.equal(verified.status, 1);
+  assert.equal(JSON.parse(verified.stdout).root_checks.some((entry) => entry.code === "missing_rail_ledger"), true);
+  const repaired = run(["onboard", "--dir", workspace, "--fix", "--json"]);
+  assert.equal(repaired.status, 0, repaired.stderr);
+  fs.writeFileSync(ledgerPath, `${JSON.stringify({
+    schema_version: "1.0",
+    project: "rail-workspace",
+    updated: "2026-07-23",
+    items: [{
+      id: "invalid-done",
+      title: "Invalid completion",
+      status: "done",
+      priority: "P1",
+      owner_role: "coder",
+      acceptance: ["evidence exists"],
+      depends_on: [],
+      evidence: [],
+    }],
+  }, null, 2)}\n`);
+  verified = run(["verify", "--dir", workspace, "--json"]);
+  assert.equal(verified.status, 1);
+  assert.equal(JSON.parse(verified.stdout).root_checks.some((entry) => entry.code === "invalid_rail_ledger"), true);
 }));
 
 test("graph creates derived JSON and DOT from explicit links", () => withTemp((temp) => {

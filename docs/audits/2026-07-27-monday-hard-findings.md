@@ -2,6 +2,7 @@
 
 **Verified:** 2026-07-21  
 **Source:** `main` at `4fb1cb4e5047fe719588fd25fa844386de6eedaf`
+**Remediation:** implemented and regression-tested on 2026-07-23; canonical work state lives in `operations/ledger.json`.
 
 Only source-demonstrable findings are recorded here.
 
@@ -50,3 +51,10 @@ Apply the boundary to at least:
 ## Monday stop line
 
 Do not run `architectonic remove`, `update`, or `upgrade` in an untrusted or externally supplied workspace until ARCH-AUD-001 is fixed. `init`, `map`, and read-only inspection are outside this exact destructive path but should still reject malformed managed paths when the common resolver lands.
+
+## Resolution evidence
+
+- `lib/runtime.js` owns one mandatory managed-path resolver.
+- Manifest-derived paths used by management, inspection, map, diff, graph, hashing, and agent instantiation pass through that resolver.
+- Tests cover traversal, absolute paths, workspace-root targeting, valid nested paths, symlink escape, and `--force`.
+- The release gate closes only when the full package and packed-artifact checks pass.
