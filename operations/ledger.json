@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "project": "architectonic-cli",
-  "updated": "2026-07-23",
+  "updated": "2026-07-29",
   "items": [
     {
       "id": "architectonic-managed-path-containment-001",
@@ -41,6 +41,150 @@
         "external_action_allowed": true,
         "acceptance_result": "All acceptance checks passed; the release stop line is cleared."
       }
+    },
+    {
+      "id": "ARC-STAB-002",
+      "title": "Roll back failed initialization to a clean retryable target",
+      "status": "review",
+      "priority": "P0",
+      "owner_role": "coder",
+      "reviewer_role": "security-reviewer",
+      "acceptance": [
+        "failed init removes only paths created by that invocation",
+        "a newly created target is removed when rollback leaves it empty",
+        "a pre-existing empty target remains present and empty",
+        "retry succeeds after the external source failure is repaired",
+        "the original error remains visible when cleanup also fails",
+        "Windows, POSIX, packed-artifact, spaces, non-ASCII, and read-only cleanup fixtures pass"
+      ],
+      "depends_on": [
+        "architectonic-managed-path-containment-001"
+      ],
+      "evidence": [
+        "architectonic/architectonic#6 defines the rollback and retry contract",
+        "architectonic/architectonic#7 contains the bounded implementation and deterministic failed-source/retry tests",
+        "exact-head npm test, check, pack:verify, Windows/POSIX, cleanup-failure, and independent review remain required"
+      ],
+      "sources": [
+        "lib/install.js",
+        "test/init-rollback.test.js",
+        "operations/audits/2026-07-29-stability-lock.md",
+        "https://github.com/architectonic/architectonic/issues/6",
+        "https://github.com/architectonic/architectonic/pull/7"
+      ],
+      "patch_refs": [
+        "https://github.com/architectonic/architectonic/pull/7"
+      ],
+      "stop_line": "Do not merge until exact-head package, packed-artifact, cross-platform, cleanup-failure, and path-preservation checks pass."
+    },
+    {
+      "id": "ARC-STAB-003",
+      "title": "Separate read-only integrity verification from explicit package adoption",
+      "status": "ready",
+      "priority": "P0",
+      "owner_role": "coder",
+      "reviewer_role": "security-reviewer",
+      "acceptance": [
+        "doctor and verify cannot clear package integrity, package-name, protocol, source, or revision drift by rewriting the manifest from the current tree",
+        "safe repair is limited to independently derivable organization-owned or manifest metadata",
+        "local contract changes require an explicit dry-run adoption or re-pin plan",
+        "Git and npm adoption prove exact source provenance and hashes",
+        "synthetic tampering remains visible after every ordinary repair command",
+        "help and documentation distinguish inspect, repair, update, upgrade, and adoption"
+      ],
+      "depends_on": [
+        "architectonic-managed-path-containment-001"
+      ],
+      "evidence": [],
+      "sources": [
+        "lib/inspect.js",
+        "lib/help.js",
+        "operations/audits/2026-07-29-stability-lock.md",
+        "https://github.com/architectonic/architectonic/issues/8"
+      ],
+      "stop_line": "No integrity claim while doctor or verify can redefine the recorded trust baseline from unverified current contents."
+    },
+    {
+      "id": "ARC-STABLE-001",
+      "title": "Lock the public Architectonic package family to one compatible verifiable baseline",
+      "status": "backlog",
+      "priority": "P0",
+      "owner_role": "architect",
+      "reviewer_role": "security-reviewer",
+      "acceptance": [
+        "one machine-readable family manifest names the exact CLI, protocol, package versions, source commits, integrity hashes, dependencies, schemas, runtime requirements, and rollback boundary",
+        "clean Git and registry-equivalent npm installations pass for standalone layers, named profiles, and representative custom compositions",
+        "update and upgrade from the prior supported family report exact preserve, replace, conflict, and unsupported downgrade behavior",
+        "package metadata, README examples, CLI defaults, generated Rail and agent or skill bindings agree with the family manifest",
+        "ABKB adopts and verifies the public family without leaking private instance state",
+        "no stable-family claim or publication occurs from dirty, unreviewed, or unverified artifacts"
+      ],
+      "depends_on": [
+        "ARC-STAB-002",
+        "ARC-STAB-003"
+      ],
+      "evidence": [],
+      "sources": [
+        "protocol/layers.json",
+        "protocol/profiles.json",
+        "package.json",
+        "operations/audits/2026-07-29-stability-lock.md",
+        "https://github.com/architectonic/architectonic/issues/4"
+      ],
+      "stop_line": "Do not add another public layer or call Architectonic stable until one exact family passes packed, source, upgrade, rollback, and ABKB adoption checks."
+    },
+    {
+      "id": "ARC-CLI-001",
+      "title": "Define the minimal public system-of-systems CLI contract without absorbing Workframe",
+      "status": "ready",
+      "priority": "P1",
+      "owner_role": "architect",
+      "reviewer_role": "orchestrator",
+      "acceptance": [
+        "Architectonic owns package inspection, composition, validation, dry-run planning, exact plan application, upgrade, removal, and portable agent or skill or Rail templates",
+        "Workframe owns conversational discovery, provider and runtime consent, collaboration, deployment, and product-specific onboarding",
+        "Workframe calls a versioned noninteractive Architectonic JSON contract rather than private imports or duplicate composition logic",
+        "plans name target and source hashes, every file action, ownership, authority, conflicts, migration, rollback, and one immutable plan hash",
+        "apply fails when target or source facts differ from the reviewed plan",
+        "existing non-Architectonic systems and user-owned files remain outside managed authority",
+        "help, README, tests, and caller examples state one responsibility boundary"
+      ],
+      "depends_on": [],
+      "evidence": [],
+      "sources": [
+        "bin/architectonic.js",
+        "lib/install.js",
+        "lib/manage.js",
+        "operations/audits/2026-07-29-stability-lock.md",
+        "https://github.com/architectonic/architectonic/issues/5"
+      ],
+      "stop_line": "Do not merge the Workframe and Architectonic CLIs or build a generalized autonomous-organization runtime in this item."
+    },
+    {
+      "id": "ARC-STAB-004",
+      "title": "Make npm layer upgrade backups ownership-safe and crash-recoverable",
+      "status": "backlog",
+      "priority": "P1",
+      "owner_role": "coder",
+      "reviewer_role": "security-reviewer",
+      "acceptance": [
+        "upgrade never removes a pre-existing backup path without a durable Architectonic ownership record and explicit cleanup decision",
+        "one contained transaction record binds old and staged versions, hashes, paths, phase, and manifest state before rename",
+        "process-kill fixtures at every rename and manifest boundary recover deterministically to old or new state",
+        "retry, resume, rollback, and stale transaction behavior are explicit",
+        "Windows locked-file, disk-full, backup collision, spaces, non-ASCII, and manifest-write failure fixtures pass",
+        "local modifications remain a review gate and the old layer remains until the new layer and manifest are durably committed"
+      ],
+      "depends_on": [
+        "ARC-STAB-003"
+      ],
+      "evidence": [],
+      "sources": [
+        "lib/manage.js",
+        "operations/audits/2026-07-29-stability-lock.md",
+        "https://github.com/architectonic/architectonic/issues/9"
+      ],
+      "stop_line": "No upgrade path may recursively delete an adjacent path merely because its name matches an internal convention."
     }
   ]
 }
